@@ -1,5 +1,15 @@
 package com.reacconmind.reacconmind.service;
 
+import com.reacconmind.reacconmind.model.Multimedia;
+import com.reacconmind.reacconmind.model.MultimediaType;
+import com.reacconmind.reacconmind.repository.MultimediaRepository;
+import com.google.auth.Credentials;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,94 +19,102 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.UUID;
 
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.google.auth.Credentials;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-
 @Service
 public class MultimediaService {
 
-    // Método principal para subir archivos multimedia
-    public String upload(MultipartFile multipartFile) {
+    @Autowired
+    private MultimediaRepository multimediaRepository; // Repositorio para Multimedia
+
+    // Método para subir archivos multimedia
+    public String uploadFile(MultipartFile file) {
         try {
-            String fileName = multipartFile.getOriginalFilename();
-            String extension = this.getExtension(fileName);
+            // Obtener el nombre del archivo original y generar un nuevo nombre
+            String fileName = file.getOriginalFilename();
+            fileName = UUID.randomUUID().toString().concat(this.getExtension(fileName));
 
-            // Asignamos una carpeta basada en el tipo de archivo
-            String folder = determineFolder(extension);
+            // Convertir MultipartFile a File
+            File tempFile = this.convertToFile(file, fileName);
 
-            if (folder == null) {
-                return "Unsupported file type";
-            }
+            // Determinar la carpeta según el tipo de archivo
+            String folder = getFolderForFileType(fileName);
 
-            // Generamos un nombre de archivo único
-            fileName = folder + "/" + UUID.randomUUID().toString().concat(extension);
+            // Subir el archivo a Firebase y obtener la URL
+            String fileUrl = this.uploadFileToFirebase(tempFile, folder + "/" + fileName);
+            tempFile.delete(); // Eliminar el archivo temporal
 
-            // Convertimos el archivo a un archivo temporal
-            File file = this.convertToFile(multipartFile, fileName);
+            // Guardar la URL y tipo de multimedia en la base de datos
+            Multimedia multimedia = new Multimedia(); // Crear instancia de Multimedia
+            multimedia.setUrl(fileUrl); // Establecer la URL obtenida de Firebase
+            multimedia.setType(MultimediaType.fromFileName(fileName)); // Asignar el tipo
 
-            // Subimos el archivo a Firebase Storage
-            String URL = this.uploadFile(file, fileName);
+            multimediaRepository.save(multimedia); // Guarda el objeto Multimedia
 
-            // Eliminamos el archivo temporal
-            file.delete();
-
-            return URL;
+            return fileUrl; // Retornar la URL del archivo
         } catch (Exception e) {
             e.printStackTrace();
-            return "The file could not be uploaded";
+            return "El archivo no pudo ser subido";
         }
     }
 
-    // Determina la carpeta basada en la extensión del archivo
-    private String determineFolder(String extension) {
-        if (extension.equalsIgnoreCase(".jpg") || extension.equalsIgnoreCase(".jpeg") || extension.equalsIgnoreCase(".png")) {
-            return "imageMultimedia";  // Carpeta para imágenes
-        } else if (extension.equalsIgnoreCase(".mp3")) {
-            return "audioMultimedia";  // Carpeta para audios
-        } else if (extension.equalsIgnoreCase(".mp4") || extension.equalsIgnoreCase(".avi") || extension.equalsIgnoreCase(".mov")) {
-            return "videoMultimedia";  // Carpeta para videos
+    // Método para determinar la carpeta según el tipo de archivo
+    private String getFolderForFileType(String fileName) {
+        String extension = this.getExtension(fileName).toLowerCase();
+        switch (extension) {
+            case ".png":
+            case ".jpg":
+            case ".jpeg":
+            case ".gif":
+                return "imagesMultimedia"; // Carpeta para imágenes
+            case ".mp4":
+            case ".avi":
+            case ".mov":
+            case ".mkv":
+                return "videosMultimedia"; // Carpeta para videos
+            case ".mp3":
+            case ".wav":
+            case ".aac":
+                return "audiosMultimedia"; // Carpeta para audios
+            default:
+                return "others"; // Carpeta por defecto para otros tipos
         }
-        return null;  // Tipo de archivo no soportado
     }
 
-    // Obtiene la extensión del archivo
-    private String getExtension(String fileName) {
-        return fileName.substring(fileName.lastIndexOf("."));
-    }
-
-    // Convierte MultipartFile a un archivo temporal
+    // Método para convertir MultipartFile a File
     private File convertToFile(MultipartFile multipartFile, String fileName) throws IOException {
         File tempFile = new File(fileName);
         try (FileOutputStream fos = new FileOutputStream(tempFile)) {
             fos.write(multipartFile.getBytes());
-            fos.close();
         }
         return tempFile;
     }
 
-    // Método para subir el archivo a Firebase Storage
-    private String uploadFile(File file, String fileName) throws IOException {
-        // Creamos el BlobId con el bucket y el nombre del archivo
-        BlobId blobId = BlobId.of("juan-a650b.appspot.com", fileName);  // Cambia tu bucket aquí
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
+    // Método para obtener la extensión de un archivo
+    private String getExtension(String fileName) {
+        return fileName.substring(fileName.lastIndexOf("."));
+    }
 
-        // Obtenemos las credenciales de Firebase
+    // Método para subir el archivo a Firebase y obtener la URL
+    private String uploadFileToFirebase(File file, String filePath) throws IOException {
+        // Configuración de Firebase Storage
         InputStream inputStream = MultimediaService.class.getClassLoader().getResourceAsStream("firebase-private-key.json");
         Credentials credentials = GoogleCredentials.fromStream(inputStream);
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
 
-        // Subimos el archivo a Firebase Storage
-        storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+        // Determinar el tipo de contenido
+        String extension = this.getExtension(filePath);
+        String contentType = extension.equals(".png") || extension.equals(".jpg") || extension.equals(".jpeg")
+                ? "image/jpeg" : extension.equals(".mp4") ? "video/mp4" : extension.equals(".mp3") ? "audio/mpeg" : "application/octet-stream";
 
-        // Creamos la URL de descarga del archivo
-        String downloadURL = "https://firebasestorage.googleapis.com/v0/b/juan-a650b.appspot.com/o/%s?alt=media";
-        return String.format(downloadURL, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
+        // Subir el archivo a Firebase
+        BlobId blobId = BlobId.of("servicesmultimedia-38681.appspot.com", filePath);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                .setContentType(contentType) // Usa el tipo de contenido correcto
+                .build();
+
+        storage.create(blobInfo, Files.readAllBytes(file.toPath())); // Crea el blob en Firebase
+
+        // Generar la URL de descarga
+        String downloadURL = "https://firebasestorage.googleapis.com/v0/b/servicesmultimedia-38681.appspot.com/o/%s?alt=media";
+        return String.format(downloadURL, URLEncoder.encode(filePath, StandardCharsets.UTF_8));
     }
 }

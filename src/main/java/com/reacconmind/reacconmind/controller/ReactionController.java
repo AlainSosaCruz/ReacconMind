@@ -20,15 +20,15 @@ public class ReactionController {
     @Autowired
     private ReactionService reactionService;
 
-    @Operation(summary = "Obtener todas las reacciones")
-    @ApiResponse(responseCode = "200", description = "Reacciones encontradas")
+    @Operation(summary = "Get all reactions")
+    @ApiResponse(responseCode = "200", description = "Found Reactions")
     @GetMapping
     public List<Reaction> getAllReactions() {
         return reactionService.getAllReactions();
     }
 
-    @Operation(summary = "Obtener reacciones por ID de usuario")
-    @ApiResponse(responseCode = "200", description = "Reacciones encontradas para el usuario")
+    @Operation(summary = "Get a reactions by its ID")
+    @ApiResponse(responseCode = "200", description = "Reactions found")
     @GetMapping("/user/{idUser}")
     public List<Reaction> getReactionsByUserId(@PathVariable int idUser) {
         return reactionService.getReactionsByUser(idUser);
