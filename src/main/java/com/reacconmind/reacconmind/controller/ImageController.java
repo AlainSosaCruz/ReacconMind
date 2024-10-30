@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+
+@Tag(name = "Image")
 @RestController
 @RequestMapping("/image")
 public class ImageController {
@@ -52,21 +55,21 @@ public class ImageController {
         }
     }
 
-    @Operation(summary = "Get all images", description = "Retrieve all images from the database")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Images retrieved successfully", content = @Content(schema = @Schema(implementation = Image.class))),
-            @ApiResponse(responseCode = "500", description = "Failed to retrieve images")
-    })
-    @GetMapping("/images")
-    public ResponseEntity<List<Image>> getAllImages() {
-        try {
-            List<Image> images = imageRepository.findAll();
-            return ResponseEntity.ok(images);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
-        }
-    }
+    //@Operation(summary = "Get all images", description = "Retrieve all images from the database")
+    //@ApiResponses(value = {
+        //    @ApiResponse(responseCode = "200", description = "Images retrieved successfully", content = @Content(schema = @Schema(implementation = Image.class))),
+      //      @ApiResponse(responseCode = "500", description = "Failed to retrieve images")
+    //})
+    //@GetMapping("/images")
+    //public ResponseEntity<List<Image>> getAllImages() {
+        //try {
+            //List<Image> images = imageRepository.findAll();
+          //  return ResponseEntity.ok(images);
+        //} catch (Exception e) {
+          //  e.printStackTrace();
+        //    return ResponseEntity.status(500).build();
+      //  }
+    //}
 
     @Operation(summary = "Get image by ID", description = "Retrieve an image by its ID")
     @ApiResponses(value = {
@@ -74,7 +77,7 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Image not found"),
             @ApiResponse(responseCode = "500", description = "Failed to retrieve image")
     })
-    @GetMapping("/images/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Image> getImageById(@PathVariable int id) {
         Optional<Image> imageOptional = imageRepository.findById(id);
         if (imageOptional.isPresent()) {
@@ -90,7 +93,7 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Image not found"),
             @ApiResponse(responseCode = "500", description = "Failed to delete image")
     })
-    @DeleteMapping("/images/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteImageById(@PathVariable int id) {
         try {
             Optional<Image> imageOptional = imageRepository.findById(id);
@@ -123,7 +126,7 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Image not found"),
             @ApiResponse(responseCode = "500", description = "Failed to update image")
     })
-    @PutMapping(value = "/images/{id}", consumes = { "multipart/form-data" })
+    @PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
     public ResponseEntity<Map<String, String>> updateImageById(
             @PathVariable int id,
             @RequestParam("file") MultipartFile file) {
@@ -158,7 +161,7 @@ public class ImageController {
 
     @Operation(summary = "Get all images for DTO", description = "Retrieve all images in DTO format")
     @ApiResponse(responseCode = "200", description = "Images retrieved successfully", content = @Content(schema = @Schema(implementation = ImageDTO.class)))
-    @GetMapping("/images")
+    @GetMapping("")
     public List<ImageDTO> findAllImages() {
         return imageRepository.findAllImages();
     }
