@@ -45,7 +45,7 @@ public class ImageService {
             Credentials credentials = GoogleCredentials.fromStream(inputStream);
             Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
 
-            // Elimina el archivo
+
             storage.delete(blobId);
             System.out.println("Imagen eliminada exitosamente de Firebase");
         } catch (StorageException | IOException e) {

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/ReacconMind/publications")
+@RequestMapping("/publications")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
 public class PublicationController {
 
@@ -82,7 +82,7 @@ public class PublicationController {
     @Operation(summary = "Get all publications for DTO")
     @ApiResponse(responseCode = "200", description = "Found Publications DTO", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PublicationDTO.class))) })
-    @GetMapping("/dto")
+    @GetMapping("/publications")
     public List<PublicationDTO> getAllPublications() {
         return publicationRepository.findAllPublications();
     }

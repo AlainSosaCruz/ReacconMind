@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/ReacconMind/comments")
+@RequestMapping("/comments")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
 public class CommentController {
 
@@ -91,7 +91,7 @@ public class CommentController {
         }
     }
 
-    @GetMapping("/comments/dto")
+    @GetMapping("/comments")
     public List<CommentDTO> findAllComments() {
         return commentRepository.findAllComments();
     }
