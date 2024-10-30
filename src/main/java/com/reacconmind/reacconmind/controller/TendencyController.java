@@ -36,7 +36,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Tag(name="Tendencies")
-@RequestMapping("/ReacconMind/tendencies")
+@RequestMapping("tendencies")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
                 RequestMethod.DELETE })
 @Configuration

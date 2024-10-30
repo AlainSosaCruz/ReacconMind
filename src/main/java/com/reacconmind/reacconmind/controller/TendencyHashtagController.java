@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/ReaccoonMind/tendencyHashtags")
+@RequestMapping("tendencyHashtags")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE })
 @Tag(name = "Tendency Hashtags", description = "Provides methods for managing tendency and hashtag relationships")
 public class TendencyHashtagController {
