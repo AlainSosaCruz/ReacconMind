@@ -1,5 +1,7 @@
 package com.reacconmind.reacconmind.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
@@ -8,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class User {
@@ -44,6 +47,12 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private ThemeBotType themeBot = ThemeBotType.CombinatedMedia;
+
+    @OneToMany(mappedBy = "sender") 
+    private List<Message> sentMessages;
+
+    @OneToMany(mappedBy = "addressee") 
+    private List<Message> receivedMessages;
 
     public User() {
     }
