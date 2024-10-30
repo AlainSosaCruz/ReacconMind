@@ -16,19 +16,30 @@ public class PasswordResetToken {
     private int idResetToken;
 
     @ManyToOne
-    @JoinColumn(name = "idUser", nullable = false)
-    private User user;
+    @JoinColumn(name = "idAccountUserEmail", nullable = true)
+    private AccountUserEmail accountUserEmail;
 
+    @ManyToOne
+    @JoinColumn(name = "idGoogleAuth", nullable = true)
+    private GoogleAuth googleAuth;
     private String token;
     private Date expirationDate;
     private boolean used;
 
-    public User getUser() {
-        return user;
+    public AccountUserEmail getAccountUserEmail() {
+        return accountUserEmail;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setAccountUserEmail(AccountUserEmail accountUserEmail) {
+        this.accountUserEmail = accountUserEmail;
+    }
+
+    public GoogleAuth getGoogleAuth() {
+        return googleAuth;
+    }
+
+    public void setGoogleAuth(GoogleAuth googleAuth) {
+        this.googleAuth = googleAuth;
     }
 
     public String getToken() {

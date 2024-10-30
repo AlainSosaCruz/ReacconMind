@@ -3,11 +3,14 @@ package com.reacconmind.reacconmind.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.reacconmind.reacconmind.model.AccountUserEmail;
 import com.reacconmind.reacconmind.model.PasswordResetToken;
 import com.reacconmind.reacconmind.model.User;
+import com.reacconmind.reacconmind.repository.AccountUserEmailRepository;
 import com.reacconmind.reacconmind.repository.PasswordResetTokenRepository;
 import com.reacconmind.reacconmind.repository.UserRepository;
 
@@ -21,26 +24,25 @@ public class PasswordResetTokenService {
     private EmailService emailService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private PasswordResetTokenRepository tokenRepository;
 
     @Autowired
-    private UserService userService;
+    private AccountUserEmailRepository accountUserEmailRepository;
+    @Autowired
+    private AccountUserEmailService accountUserEmailService;
 
     public Optional<PasswordResetToken> getToken(String token) {
         return tokenRepository.findByToken(token);
     }
 
-    public Optional<User> getUserByToken(String token) {
+    public Optional<AccountUserEmail> getUserByToken(String token) {
         return tokenRepository
-            .findByToken(token)
-            .map(PasswordResetToken::getUser);
+                .findByToken(token)
+                .map(PasswordResetToken::getAccountUserEmail);
     }
 
     public String createPasswordResetToken(String email) {
-        User user = userRepository.findByEmail(email);
+        AccountUserEmail user = accountUserEmailRepository.findByEmail(email);
 
         if (user == null) {
             return "User not found for email";
@@ -49,22 +51,20 @@ public class PasswordResetTokenService {
         String token = TokenGenerator.generateToken();
         PasswordResetToken resetToken = new PasswordResetToken();
         resetToken.setToken(token);
-        resetToken.setUser(user);
+        resetToken.setAccountUserEmail(user);
 
         tokenRepository.save(resetToken);
 
         emailService.sendEmail(
-            user.getEmail(),
-            "Password Reset Request",
-            token
-        );
+                user.getEmail(),
+                "Password Reset Request",
+                token);
 
         return "Request processed";
     }
 
     public boolean validatePasswordResetToken(String token, String password) {
-        Optional<PasswordResetToken> optionalToken =
-            tokenRepository.findByToken(token);
+        Optional<PasswordResetToken> optionalToken = tokenRepository.findByToken(token);
 
         if (!optionalToken.isPresent()) {
             throw new RuntimeException("Token not found");
@@ -83,9 +83,9 @@ public class PasswordResetTokenService {
             throw new RuntimeException("Token has expired");
         }
 
-        User user = resetToken.getUser();
+        AccountUserEmail user = resetToken.getAccountUserEmail();
         user.setPassword(password);
-        userService.save(user);
+        accountUserEmailService.save(user);
 
         resetToken.setUsed(true);
         tokenRepository.save(resetToken);

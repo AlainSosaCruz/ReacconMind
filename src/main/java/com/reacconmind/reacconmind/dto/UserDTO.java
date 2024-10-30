@@ -1,11 +1,13 @@
 package com.reacconmind.reacconmind.dto;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.reacconmind.reacconmind.model.ThemeBotType;
-import com.reacconmind.reacconmind.model.ThemeType;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
+    private int idUser;
     private String name;
     private String email;
     private String userName;
@@ -13,8 +15,8 @@ public class UserDTO {
     private String imageProfile;
     private String imageFacade;
     private String thumbnail;
-    private ThemeType theme;
-    private ThemeBotType themeBot;
+    private ProfileColorDTO profileColor;
+    private List<ThemePreferenceDTO> themePreferences = new ArrayList<>();
     private Date dateCreationProfile;
 
     public String getName() {
@@ -73,20 +75,12 @@ public class UserDTO {
         this.thumbnail = thumbnail;
     }
 
-    public ThemeType getTheme() {
-        return theme;
+    public List<ThemePreferenceDTO> getThemePreferences() {
+        return themePreferences;
     }
 
-    public void setTheme(ThemeType theme) {
-        this.theme = theme;
-    }
-
-    public ThemeBotType getThemeBot() {
-        return themeBot;
-    }
-
-    public void setThemeBot(ThemeBotType themeBot) {
-        this.themeBot = themeBot;
+    public void setThemePreferences(List<ThemePreferenceDTO> themePreferences) {
+        this.themePreferences = themePreferences;
     }
 
     public Date getDateCreationProfile() {
@@ -95,6 +89,22 @@ public class UserDTO {
 
     public void setDateCreationProfile(Date dateCreationProfile) {
         this.dateCreationProfile = dateCreationProfile;
+    }
+
+    public void setProfileColor(ProfileColorDTO profileColor) {
+        this.profileColor = profileColor;
+    }
+
+    public ProfileColorDTO getProfileColor() {
+        return profileColor;
+    }
+
+    public int getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
     }
 
 }

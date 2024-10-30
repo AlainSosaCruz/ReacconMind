@@ -3,6 +3,7 @@ package com.reacconmind.reacconmind.controller;
 import java.security.Principal;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.reacconmind.reacconmind.model.AuthType;
+import com.reacconmind.reacconmind.model.AccountUserEmail;
 import com.reacconmind.reacconmind.model.GoogleAuth;
-import com.reacconmind.reacconmind.model.ThemeBotType;
 import com.reacconmind.reacconmind.model.User;
+import com.reacconmind.reacconmind.service.AccountUserEmailService;
 import com.reacconmind.reacconmind.service.GoogleAuthService;
 import com.reacconmind.reacconmind.service.UserService;
 
@@ -24,14 +25,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RestController
 @RequestMapping("/api")
 public class GoogleAuthController {
+    @Autowired
+    private GoogleAuthService googleAuthService;
 
-    private final UserService userService;
-    private final GoogleAuthService googleAuthService;
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private AccountUserEmailService accountUserEmailService;
 
     public GoogleAuthController(
-        UserService userService,
-        GoogleAuthService googleAuthService
-    ) {
+            UserService userService,
+            GoogleAuthService googleAuthService) {
         this.userService = userService;
         this.googleAuthService = googleAuthService;
     }
@@ -43,38 +48,20 @@ public class GoogleAuthController {
     }
 
     @RequestMapping("/user")
-    @Operation(
-        summary = "Get authenticated user",
-        description = "Returns the principal of the authenticated user."
-    )
+    @Operation(summary = "Get authenticated user", description = "Returns the principal of the authenticated user.")
     public Principal user(Principal user) {
         return user;
     }
 
     @GetMapping("/oauth2/callback/google")
-    @Operation(
-        summary = "Google OAuth2 Callback",
-        description = "Registers a user using Google OAuth2."
-    )
-    @ApiResponses(
-        value = {
-            @ApiResponse(
-                responseCode = "200",
-                description = "User successfully registered."
-            ),
-            @ApiResponse(
-                responseCode = "400",
-                description = "Invalid request."
-            ),
-            @ApiResponse(
-                responseCode = "409",
-                description = "Conflict: Google ID already registered."
-            ),
-        }
-    )
+    @Operation(summary = "Google OAuth2 Callback", description = "Registers a user using Google OAuth2.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User successfully registered."),
+            @ApiResponse(responseCode = "400", description = "Invalid request."),
+            @ApiResponse(responseCode = "409", description = "Conflict: Google ID already registered."),
+    })
     public ModelAndView googleCallback(
-        @AuthenticationPrincipal OAuth2User principal
-    ) {
+            @AuthenticationPrincipal OAuth2User principal) {
         String name = principal.getAttribute("name");
         String email = principal.getAttribute("email");
         String imageProfile = principal.getAttribute("picture");
@@ -83,44 +70,39 @@ public class GoogleAuthController {
         String biography = "Hi";
         String userName = principal.getAttribute("name") + "2e";
 
-        Optional<User> existingUser = userService.findUserByEmail(email);
+        Optional<AccountUserEmail> existingUser = accountUserEmailService.findUserByEmail(email);
         User user;
-
+        AccountUserEmail accountUserEmail;
         if (existingUser.isPresent()) {
-            user = existingUser.get();
+            accountUserEmail = existingUser.get();
             return new ModelAndView(
-                "redirect:http://localhost:8080/doc/swagger-ui/index.html"
-            );
+                    "redirect:http://localhost:8080/doc/swagger-ui/index.html");
         } else {
             user = new User();
             user.setName(name);
-            user.setEmail(email);
             user.setImageProfile(imageProfile);
-            user.setTypeAuth(AuthType.Google);
             user.setBiography(biography);
             user.setImageFacade(imageFacade);
             user.setUserName(userName);
-            user.setThemeBot(ThemeBotType.CombinatedMedia);
             userService.save(user);
         }
 
-        Optional<GoogleAuth> existingGoogleAuth =
-            googleAuthService.findByGoogleId(googleId);
+        Optional<GoogleAuth> existingGoogleAuth = googleAuthService.findByGoogleId(googleId);
 
         if (existingGoogleAuth.isPresent()) {
             return new ModelAndView(
-                "redirect:http://localhost:8080/doc/swagger-ui/index.html"
-            );
+                    "redirect:http://localhost:8080/doc/swagger-ui/index.html");
         }
 
         GoogleAuth googleAuth = new GoogleAuth();
         googleAuth.setUser(user);
         googleAuth.setGoogleId(googleId);
+        googleAuth.setEmail(email);
+        googleAuth.setUser(user);
 
         googleAuthService.save(googleAuth);
 
         return new ModelAndView(
-            "redirect:http://localhost:8080/doc/swagger-ui/index.html"
-        );
+                "redirect:http://localhost:8080/doc/swagger-ui/index.html");
     }
 }

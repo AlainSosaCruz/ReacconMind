@@ -97,8 +97,6 @@ public class UserControllerTest {
         user.setImageProfile("testProfile.exame");
         user.setBiography("Hi this is example");
         user.setUserName("ExampleUsers");
-        user.setEmail("TestExample@exampleUser.com");
-        user.setPassword("password");
 
         mvc
             .perform(
@@ -119,8 +117,6 @@ public class UserControllerTest {
         user.setImageProfile("testProfile.exame");
         user.setBiography("Hi this is example update");
         user.setUserName("Update");
-        user.setEmail("alan@gmail.com");
-        user.setPassword("password");
 
         mvc
             .perform(
