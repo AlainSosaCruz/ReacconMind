@@ -45,7 +45,7 @@ public class ImageService {
             Credentials credentials = GoogleCredentials.fromStream(inputStream);
             Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
 
-            // Elimina el archivo
+
             storage.delete(blobId);
             System.out.println("Imagen eliminada exitosamente de Firebase");
         } catch (StorageException | IOException e) {
@@ -82,7 +82,7 @@ public class ImageService {
         String contentType = extension.equals(".png") ? "image/png" : "image/jpeg"; // Define el tipo de contenido según
         // la extensión
 
-        BlobId blobId = BlobId.of("servicesmultimedia-38681.appspot.com", filePath);
+        BlobId blobId = BlobId.of("pruebahoy-29c3d.appspot.com", filePath);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setContentType(contentType) // Usa el tipo de contenido correcto
                 .build();
@@ -91,7 +91,7 @@ public class ImageService {
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
 
-        String downloadURL = "https://firebasestorage.googleapis.com/v0/b/servicesmultimedia-38681.appspot.com/o/%s?alt=media";
+        String downloadURL = "https://firebasestorage.googleapis.com/v0/b/pruebahoy-29c3d.appspot.com/o/%s?alt=media";
         return String.format(downloadURL, URLEncoder.encode(filePath, StandardCharsets.UTF_8));
     }
 }

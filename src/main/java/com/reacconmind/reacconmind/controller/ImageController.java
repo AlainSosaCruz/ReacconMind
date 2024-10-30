@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/image")
 public class ImageController {
 
     @Autowired
@@ -158,7 +158,7 @@ public class ImageController {
 
     @Operation(summary = "Get all images for DTO", description = "Retrieve all images in DTO format")
     @ApiResponse(responseCode = "200", description = "Images retrieved successfully", content = @Content(schema = @Schema(implementation = ImageDTO.class)))
-    @GetMapping("/images/dto")
+    @GetMapping("/images")
     public List<ImageDTO> findAllImages() {
         return imageRepository.findAllImages();
     }
