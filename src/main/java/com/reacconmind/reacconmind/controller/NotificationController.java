@@ -31,7 +31,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Tag(name = "Notification")
-@RequestMapping("ReacconMind/notifications")
+@RequestMapping("notifications")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
                 RequestMethod.PUT })
 public class NotificationController {

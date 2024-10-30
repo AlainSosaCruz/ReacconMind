@@ -13,9 +13,9 @@ public class MessageNotificationStrategy implements NotificationStrategy {
 
     @Override
     public void send(Notification notification) {
-        String customMessage = notification.getIdUser().getName() + " texted you.";
+        String customMessage = notification.getIdUser().getName() + " you have received a message.";
         notification.setContent(customMessage); 
-
+        notification.setState(NotificationStatus.Unread);
         repository.save(notification);
         System.out.println("Notificación saved in database " + notification.getContent());
     }
