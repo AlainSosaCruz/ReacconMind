@@ -30,6 +30,19 @@ CREATE TABLE Multimedia (
     uploadDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE Message (
+    idMessage INT PRIMARY KEY AUTO_INCREMENT,
+    idSender INT NOT NULL,
+    idAddressee INT NOT NULL,
+    content TEXT NOT NULL,
+    multimedia VARCHAR(255),
+    shippingDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (idSender) REFERENCES User(idUser) ON DELETE CASCADE,
+    FOREIGN KEY (idAddressee) REFERENCES User(idUser) ON DELETE CASCADE,
+    CHECK (idSender <> idAddressee) -- Asegura que no se envíen mensajes a sí mismos
+);
+
+
 CREATE TABLE Bot (
     idBot INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -126,7 +139,7 @@ CREATE TABLE Notification (
 	state ENUM('Read', 'Unread') NOT NULL,
     dateNotification TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (idUser) REFERENCES User(idUser) ON DELETE CASCADE
-);
+);	
 
 CREATE TABLE Comment (
     idComment INT PRIMARY KEY AUTO_INCREMENT,
@@ -183,6 +196,4 @@ CREATE TABLE GoogleAuth (
     googleId VARCHAR(255) NOT NULL UNIQUE,
     FOREIGN KEY (idUser) REFERENCES User(idUser) ON DELETE CASCADE
 );
-
-
 
