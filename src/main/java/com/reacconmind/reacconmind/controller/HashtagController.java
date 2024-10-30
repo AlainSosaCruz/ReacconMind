@@ -34,7 +34,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Tag(name = "Hashtag")
-@RequestMapping("/ReacconMind/hashtags")
+@RequestMapping("hashtags")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
                 RequestMethod.PUT })
 @Configuration
