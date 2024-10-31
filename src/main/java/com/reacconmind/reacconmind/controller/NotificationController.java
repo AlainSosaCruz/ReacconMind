@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@Tag(name = "Notification")
+@Tag(name = "Notification", description = "Provides methods for managing notifications")
 @RequestMapping("notifications")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
                 RequestMethod.PUT })
@@ -65,9 +65,9 @@ public class NotificationController {
         @Operation(summary = "Mark a notification as read", description = "Mark a notification as read.")
         @ApiResponse(responseCode = "200", description = "Notification read correctly", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Notification.class))) })
-        @PutMapping("/{id}/read")
-        public ResponseEntity<Void> maskAsRead(@PathVariable Integer id) {
-                notificationService.maskAsRead(id);
+        @PutMapping("/read/{idNotification}")
+        public ResponseEntity<Void> maskAsRead(@PathVariable Integer idNotification) {
+                notificationService.maskAsRead(idNotification);
                 return ResponseEntity.ok().build();
         }
 
