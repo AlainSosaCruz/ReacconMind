@@ -106,7 +106,7 @@ public class MultimediaService {
                 ? "image/jpeg" : extension.equals(".mp4") ? "video/mp4" : extension.equals(".mp3") ? "audio/mpeg" : "application/octet-stream";
 
         // Subir el archivo a Firebase
-        BlobId blobId = BlobId.of("pruebahoy-29c3d.appspot.com", filePath);
+        BlobId blobId = BlobId.of("services-firebase-c14b0.appspot.com", filePath);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setContentType(contentType) // Usa el tipo de contenido correcto
                 .build();
@@ -114,7 +114,7 @@ public class MultimediaService {
         storage.create(blobInfo, Files.readAllBytes(file.toPath())); // Crea el blob en Firebase
 
         // Generar la URL de descarga
-        String downloadURL = "https://firebasestorage.googleapis.com/v0/b/pruebahoy-29c3d.appspot.com/o/%s?alt=media";
+        String downloadURL = "https://firebasestorage.googleapis.com/v0/b/services-firebase-c14b0.appspot.com/o/%s?alt=media";
         return String.format(downloadURL, URLEncoder.encode(filePath, StandardCharsets.UTF_8));
     }
 }
