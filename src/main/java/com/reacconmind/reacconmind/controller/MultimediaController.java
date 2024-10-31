@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "Multimedia")
+@Tag(name = "Multimedia", description = "API for managing multimedia files, including upload.")
 @RestController
 @RequestMapping("/multimedia")
 public class MultimediaController {

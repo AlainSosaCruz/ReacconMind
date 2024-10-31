@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Reaction")
+@Tag(name = "Reactions", description = "Operations related to reaction management.")
 @RestController
 @RequestMapping("/reactions")
 public class ReactionController {

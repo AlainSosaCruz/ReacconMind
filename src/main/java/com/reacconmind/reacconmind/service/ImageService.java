@@ -36,10 +36,8 @@ public class ImageService {
     // Método para eliminar la imagen anterior de Firebase
     public void deleteFromFirebase(String imageUrl) {
         try {
-            // Extrae el nombre del archivo desde la URL
-            String fileName = extractFileNameFromUrl(imageUrl);
 
-            // Obtiene la referencia del archivo en Firebase
+            String fileName = extractFileNameFromUrl(imageUrl);
             BlobId blobId = BlobId.of("services-firebase-c14b0.appspot.com", "imagesPublication/" + fileName);
             InputStream inputStream = ImageService.class.getClassLoader().getResourceAsStream("firebase-private-key.json");
             Credentials credentials = GoogleCredentials.fromStream(inputStream);

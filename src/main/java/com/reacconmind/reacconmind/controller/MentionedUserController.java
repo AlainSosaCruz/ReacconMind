@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Mentioned")
+@Tag(name = "Mentioned Users", description = "Operations related to mentioned user management.")
+
 @RestController
 @RequestMapping("/mentionedUsers")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })

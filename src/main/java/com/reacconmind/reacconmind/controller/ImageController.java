@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 
-@Tag(name = "Image")
+@Tag(name = "Images", description = "API for managing images, including upload, retrieval, update, and deletion.")
 @RestController
 @RequestMapping("/image")
 public class ImageController {
@@ -57,18 +57,18 @@ public class ImageController {
 
     //@Operation(summary = "Get all images", description = "Retrieve all images from the database")
     //@ApiResponses(value = {
-        //    @ApiResponse(responseCode = "200", description = "Images retrieved successfully", content = @Content(schema = @Schema(implementation = Image.class))),
-      //      @ApiResponse(responseCode = "500", description = "Failed to retrieve images")
+    //    @ApiResponse(responseCode = "200", description = "Images retrieved successfully", content = @Content(schema = @Schema(implementation = Image.class))),
+    //      @ApiResponse(responseCode = "500", description = "Failed to retrieve images")
     //})
     //@GetMapping("/images")
     //public ResponseEntity<List<Image>> getAllImages() {
-        //try {
-            //List<Image> images = imageRepository.findAll();
-          //  return ResponseEntity.ok(images);
-        //} catch (Exception e) {
-          //  e.printStackTrace();
-        //    return ResponseEntity.status(500).build();
-      //  }
+    //try {
+    //List<Image> images = imageRepository.findAll();
+    //  return ResponseEntity.ok(images);
+    //} catch (Exception e) {
+    //  e.printStackTrace();
+    //    return ResponseEntity.status(500).build();
+    //  }
     //}
 
     @Operation(summary = "Get image by ID", description = "Retrieve an image by its ID")
@@ -159,7 +159,7 @@ public class ImageController {
         }
     }
 
-    @Operation(summary = "Get all images for DTO", description = "Retrieve all images in DTO format")
+    @Operation(summary = "Get all images for user", description = "Retrieve all images in DTO format")
     @ApiResponse(responseCode = "200", description = "Images retrieved successfully", content = @Content(schema = @Schema(implementation = ImageDTO.class)))
     @GetMapping("")
     public List<ImageDTO> findAllImages() {
