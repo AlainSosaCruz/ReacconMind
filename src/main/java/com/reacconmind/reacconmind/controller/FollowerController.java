@@ -42,19 +42,36 @@ public class FollowerController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Get a list of followings ", description = "A user can stop following a user.")
-    @ApiResponse(responseCode = "200", description = "Unfollowed user.", content = {
+    @Operation(summary = "Get a list of followings with pagination", description = "A user can stop following a user.")
+     @ApiResponse(responseCode = "200", description = "Unfollowed user.", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BotDTO.class))) })
-    @GetMapping("/getAll-followings/{userId}")
-    public ResponseEntity<List<FollowerDTO>> getFollowings(@PathVariable int userId) {
-        List<FollowerDTO> followings = followerService.getFollowings(userId);
+    @GetMapping("/followings/{userId}")
+    public ResponseEntity<List<FollowerDTO>> getFollowings(
+            @PathVariable int userId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        List<FollowerDTO> followings = followerService.getFollowings(userId, page, size);
         return ResponseEntity.ok(followings);
     }
+
+    // @Operation(summary = "Get a list of followings ", description = "A user can
+    // stop following a user.")
+    // @ApiResponse(responseCode = "200", description = "Unfollowed user.", content
+    // = {
+    // @Content(mediaType = "application/json", array = @ArraySchema(schema =
+    // @Schema(implementation = BotDTO.class))) })
+    // @GetMapping("/followings/{userId}")
+    // public ResponseEntity<List<FollowerDTO>> getFollowings(@PathVariable int
+    // userId) {
+    // List<FollowerDTO> followings = followerService.getFollowings(userId);
+    // return ResponseEntity.ok(followings);
+    // }
 
     @Operation(summary = "Get a list of follower ", description = "A user can stop following a user.")
     @ApiResponse(responseCode = "200", description = "Unfollowed user.", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BotDTO.class))) })
-    @GetMapping("/followers/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<List<FollowerDTO>> getFollowers(@PathVariable int userId) {
         List<FollowerDTO> followers = followerService.getFollowers(userId);
         return ResponseEntity.ok(followers);

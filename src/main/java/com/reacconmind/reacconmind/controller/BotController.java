@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.reacconmind.reacconmind.model.Bot;
@@ -40,12 +41,12 @@ public class BotController {
     @Autowired
     private BotService botService;
 
-    @Operation(summary = "Get all Bots", description = "Retrieve a list of all bots.")
+    @Operation(summary = "Get all bots with pagination ", description = "Retrieve a list of all bots with pagination.")
     @ApiResponse(responseCode = "200", description = "List of bots retrieved successfully.", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BotDTO.class))) })
-    @GetMapping
-    public List<BotDTO> getAllBots() {
-        List<Bot> bots = botService.getAllBots();
+    @GetMapping(value = "pagination", params = { "page", "pageSize" })
+    public List<BotDTO> getAllBots(@RequestParam(value = "page", defaultValue = "0", required = false) int page, @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        List<Bot> bots = botService.getAllBots(page, pageSize);
         return bots.stream().map(botService::convertEntityToDTO).toList();
     }
 

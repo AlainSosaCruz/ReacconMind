@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.reacconmind.reacconmind.dto.FollowerDTO;
@@ -60,12 +62,23 @@ public class FollowerService {
         followerRepository.deleteById(followerPK);
     }
 
-    public List<FollowerDTO> getFollowings(int userId) {
-        List<Follower> followings = followerRepository.findFollowingsByUserId(userId);
-        return followings.stream()
-                .map(f -> new FollowerDTO(f.getIdFollower().getIdUserFollower(), f.getIdFollower().getIdFollowing()))                
-                .collect(Collectors.toList());
-    }
+
+public List<FollowerDTO> getFollowings(int userId, int page, int size) {
+    PageRequest pageReq = PageRequest.of(page, size);
+    Page<Follower> followings = followerRepository.findFollowingsByUserId(userId, pageReq);
+    
+    return followings.getContent().stream()
+            .map(f -> new FollowerDTO(f.getIdFollower().getIdUserFollower(), f.getIdFollower().getIdFollowing()))
+            .collect(Collectors.toList());
+}
+
+
+    // public List<FollowerDTO> getFollowings(int userId) {
+    //     List<Follower> followings = followerRepository.findFollowingsByUserId(userId);
+    //     return followings.stream()
+    //             .map(f -> new FollowerDTO(f.getIdFollower().getIdUserFollower(), f.getIdFollower().getIdFollowing()))                
+    //             .collect(Collectors.toList());
+    // }
 
 
     public List<FollowerDTO> getFollowers(int userId) {

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.reacconmind.reacconmind.dto.BotDTO;
@@ -22,8 +24,10 @@ public class BotService {
     private BotRepository repository;
 
 
-    public List<Bot> getAllBots() {
-        return repository.findAll();
+    public List<Bot> getAllBots(int page, int pageSize) {
+        PageRequest pageReq = PageRequest.of(page, pageSize);
+        Page<Bot> bots = repository.findAll(pageReq); 
+        return bots.getContent();         
     }
 
     public Optional<Bot> getBotById(int idBot) {
