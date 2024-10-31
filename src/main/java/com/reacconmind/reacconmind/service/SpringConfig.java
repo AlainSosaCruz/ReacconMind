@@ -37,7 +37,7 @@ public class SpringConfig {
                     .requestMatchers(
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
-                        "/ReacconMind/users/**"
+                        "/users/**"
                     )
                     .permitAll();
                 registry.anyRequest().authenticated();

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.reacconmind.reacconmind.dto.ProfileColorAddDTO;
-import com.reacconmind.reacconmind.dto.ProfileColorDTO;
 import com.reacconmind.reacconmind.model.ProfileColor;
 import com.reacconmind.reacconmind.model.ThemeType;
 import com.reacconmind.reacconmind.model.User;
@@ -25,9 +24,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/profile-colors")
+@Tag(name = "Profile Color", description = "Endpoints for managing user profile colors.")
 public class ProfileColorController {
 
     @Autowired

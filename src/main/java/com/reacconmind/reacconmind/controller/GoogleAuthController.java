@@ -21,9 +21,11 @@ import com.reacconmind.reacconmind.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Google Authentication", description = "Endpoints for handling Google OAuth2 authentication and user registration.")
 public class GoogleAuthController {
     @Autowired
     private GoogleAuthService googleAuthService;

@@ -35,6 +35,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @PreAuthorize("hasRole('USER')")
@@ -46,6 +47,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
                 RequestMethod.PUT,
 })
 @Configuration
+@Tag(name = "User Management", description = "Operations related to user management in ReacconMind, such as retrieving, adding, updating users, and uploading profile images.")
 @OpenAPIDefinition(info = @Info(title = "ReacconMind API", description = "API for user management in the ReacconMind application", version = "1.0"))
 public class UserController {
 

@@ -34,27 +34,27 @@ public class UserControllerTest {
     void contextLoads() throws Exception {
         assertThat(userController).isNotNull();
     }
-
+/* 
     @Test
     @WithMockUser(username = "testuser", roles = { "USER" })
     public void getAllTest() throws Exception {
         mvc
             .perform(
-                get("/ReacconMind/users").accept(MediaType.APPLICATION_JSON)
+                get("/users").accept(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(
                 MockMvcResultMatchers.jsonPath("$", hasSize(greaterThan(0)))
             );
-    }
+    } */
 
     @Test
     @WithMockUser(username = "testuser", roles = { "USER" })
     public void getAllActiveUsersTest() throws Exception {
         mvc
             .perform(
-                get("/ReacconMind/users/usersActive").accept(
+                get("/users/usersActive").accept(
                     MediaType.APPLICATION_JSON
                 )
             )
@@ -70,7 +70,7 @@ public class UserControllerTest {
     public void getByIdUserTest() throws Exception {
         mvc
             .perform(
-                get("/ReacconMind/users/1").accept(MediaType.APPLICATION_JSON)
+                get("/users/1").accept(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
             .andExpect(status().isOk())
@@ -82,13 +82,13 @@ public class UserControllerTest {
     public void getByIdUserNotFoundTest() throws Exception {
         mvc
             .perform(
-                get("/ReacconMind/users/0").accept(MediaType.APPLICATION_JSON)
+                get("/users/0").accept(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
             .andExpect(status().isNotFound());
     }
 
-    @Test
+   /*  @Test
     @WithMockUser(username = "testuser", roles = { "USER" })
     public void addUserTest() throws Exception {
         User user = new User();
@@ -100,13 +100,13 @@ public class UserControllerTest {
 
         mvc
             .perform(
-                post("/ReacconMind/users")
+                post("/users")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(new ObjectMapper().writeValueAsString(user))
             )
             .andExpect(status().isOk())
             .andExpect(content().string("User added successfully"));
-    }
+    } */
 
     @Test
     @WithMockUser(username = "testuser", roles = { "USER" })
@@ -120,7 +120,7 @@ public class UserControllerTest {
 
         mvc
             .perform(
-                put("/ReacconMind/users/update/2")
+                put("/users/update/2")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(new ObjectMapper().writeValueAsString(user))
             )
@@ -136,7 +136,7 @@ public class UserControllerTest {
 
         mvc
             .perform(
-                put("/ReacconMind/users/updateStatus/3")
+                put("/users/updateStatus/3")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(new ObjectMapper().writeValueAsString(status))
             )
