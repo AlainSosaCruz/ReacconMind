@@ -4,13 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.ForeignKey;
-
-
 
 @Entity
 @Table(name = "Publication")
@@ -27,6 +30,9 @@ public class Publication {
     @ManyToOne
     @JoinColumn(name = "idBot", foreignKey = @ForeignKey(name = "fk_bot_publication"))
     private Bot bot; // Nueva relación con la entidad Bot
+
+    @OneToMany(mappedBy = "publication", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PublicationHashtag> publicationHashtags;
 
     @Column(length = 250)
     private String content;

@@ -1,5 +1,6 @@
 package com.reacconmind.reacconmind.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -14,20 +15,47 @@ import jakarta.persistence.Table;
 @Table(name = "PublicationHashtag")
 public class PublicationHashtag {
     @Id
-    @ManyToOne
-    @JoinColumn(name = "idPublication", nullable = false)
-    private Publication publication;
+    @Column(name = "idPublication", insertable = false, updatable = false)
+    private Integer idPublication;  // Agregamos este campo
 
     @Id
+    @Column(name = "idHashtag", insertable = false, updatable = false)
+    private Integer idHashtag;  // Agregamos este campo
+
     @ManyToOne
-    @JoinColumn(name = "idHashtag", nullable = false)
+    @JoinColumn(name = "idPublication", referencedColumnName = "idPublication", insertable = false, updatable = false)
+    private Publication publication;
+
+    @ManyToOne
+    @JoinColumn(name = "idHashtag", referencedColumnName = "idHashtag", insertable = false, updatable = false)
     private Hashtag hashtag;
 
+    // Constructor vacío
     public PublicationHashtag() {}
 
+    // Constructor con parámetros
     public PublicationHashtag(Publication publication, Hashtag hashtag) {
         this.publication = publication;
         this.hashtag = hashtag;
+        this.idPublication = publication.getIdPublication();
+        this.idHashtag = hashtag.getIdHashtag();
+    }
+
+    // Getters y setters
+    public Integer getIdPublication() {
+        return idPublication;
+    }
+
+    public void setIdPublication(Integer idPublication) {
+        this.idPublication = idPublication;
+    }
+
+    public Integer getIdHashtag() {
+        return idHashtag;
+    }
+
+    public void setIdHashtag(Integer idHashtag) {
+        this.idHashtag = idHashtag;
     }
 
     public Publication getPublication() {
@@ -46,3 +74,5 @@ public class PublicationHashtag {
         this.hashtag = hashtag;
     }
 }
+
+    

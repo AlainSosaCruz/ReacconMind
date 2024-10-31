@@ -1,28 +1,41 @@
 package com.reacconmind.reacconmind.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
-@Document(collection = "Message")
+@Entity
 public class Message {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idMessage; 
-    private int idSender; 
-    private int idAddressee; 
+
+    @ManyToOne
+    @JoinColumn(name = "idSender", nullable = false) 
+    private User sender; 
+
+    @ManyToOne
+    @JoinColumn(name = "idAddressee", nullable = false) 
+    private User addressee; 
+
+
+    @Column(nullable = false)
     private String content;     
+
     private String multimedia;
-    private String shippingDate; 
 
     public Message() {}
     
-    public Message(int idMessage, int idSender, int idAddressee, String content, String multimedia, String shippingDate) {
-        this.idMessage = idMessage;
-        this.idSender = idSender;
-        this.idAddressee = idAddressee;
+    public Message(User sender, User addressee, String content, String multimedia) {
+        this.sender = sender;
+        this.addressee = addressee;
         this.content = content;
         this.multimedia = multimedia;
-        this.shippingDate = shippingDate;
     }
 
     public int getIdMessage() {
@@ -33,20 +46,20 @@ public class Message {
         this.idMessage = idMessage;
     }
 
-    public int getIdSender() {
-        return idSender;
+    public User getSender() {
+        return sender;
     }
 
-    public void setIdSender(int idSender) {
-        this.idSender = idSender;
+    public void setSender(User sender) {
+        this.sender = sender;
     }
 
-    public int getIdAddressee() {
-        return idAddressee;
+    public User getAddressee() {
+        return addressee;
     }
 
-    public void setIdAddressee(int idAddressee) {
-        this.idAddressee = idAddressee;
+    public void setAddressee(User addressee) {
+        this.addressee = addressee;
     }
 
     public String getContent() {
@@ -64,16 +77,5 @@ public class Message {
     public void setMultimedia(String multimedia) {
         this.multimedia = multimedia;
     }
-
-    public String getShippingDate() {
-        return shippingDate;
-    }
-
-    public void setShippingDate(String shippingDate) {
-        this.shippingDate = shippingDate;
-    }
-
-
-
 
 }

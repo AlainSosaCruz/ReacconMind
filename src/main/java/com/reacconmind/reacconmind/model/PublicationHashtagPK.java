@@ -4,33 +4,38 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class PublicationHashtagPK implements Serializable {
-    private int idPublication;
-    private int idHashtag;
+    private Integer idPublication;  // Cambiado a Integer
+    private Integer idHashtag;      // Cambiado a Integer
 
-    public PublicationHashtagPK() {
-    }
+    public PublicationHashtagPK() {}
 
-    public PublicationHashtagPK(int idPublication, int idHashtag) {
+    public PublicationHashtagPK(Integer idPublication, Integer idHashtag) {
         this.idPublication = idPublication;
         this.idHashtag = idHashtag;
     }
 
-    public int getIdPublication() {
+    public Integer getIdPublication() {
         return idPublication;
     }
 
+    public void setIdPublication(Integer idPublication) {
+        this.idPublication = idPublication;
+    }
 
-    public int getIdHashtag() {
+    public Integer getIdHashtag() {
         return idHashtag;
     }
 
+    public void setIdHashtag(Integer idHashtag) {
+        this.idHashtag = idHashtag;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof PublicationHashtagPK)) return false;
         PublicationHashtagPK that = (PublicationHashtagPK) o;
-        return idPublication == that.idPublication && idHashtag == that.idHashtag;
+        return Objects.equals(idPublication, that.idPublication) && Objects.equals(idHashtag, that.idHashtag);
     }
 
     @Override

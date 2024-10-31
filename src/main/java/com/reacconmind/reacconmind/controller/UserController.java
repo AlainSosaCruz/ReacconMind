@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.reacconmind.reacconmind.dto.UserDTO;
 import com.reacconmind.reacconmind.model.StatusType;
 import com.reacconmind.reacconmind.model.User;
-import com.reacconmind.reacconmind.service.FirebaseUser;
 import com.reacconmind.reacconmind.service.UserService;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -36,10 +35,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @PreAuthorize("hasRole('USER')")
-@RequestMapping("/ReacconMind/users")
+@RequestMapping("/users")
 @CrossOrigin(origins = "*", methods = {
                 RequestMethod.GET,
                 RequestMethod.POST,
@@ -47,6 +47,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
                 RequestMethod.PUT,
 })
 @Configuration
+@Tag(name = "User Management", description = "Operations related to user management in ReacconMind, such as retrieving, adding, updating users, and uploading profile images.")
 @OpenAPIDefinition(info = @Info(title = "ReacconMind API", description = "API for user management in the ReacconMind application", version = "1.0"))
 public class UserController {
 
@@ -56,14 +57,22 @@ public class UserController {
         @Autowired
         private ModelMapper modelMapper;
 
-       /*  @Operation(summary = "Get all Users", description = "Get a list of all registered users.")
-        @ApiResponse(responseCode = "200", description = "List of users obtained successfully", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = User.class))),
-        })
-        @GetMapping
-        public List<User> getAll() {
-                return userService.getAll();
-        } */
+        /*
+         * @Operation(summary = "Get all Users", description =
+         * "Get a list of all registered users.")
+         * 
+         * @ApiResponse(responseCode = "200", description =
+         * "List of users obtained successfully", content = {
+         * 
+         * @Content(mediaType = "application/json", array = @ArraySchema(schema
+         * = @Schema(implementation = User.class))),
+         * })
+         * 
+         * @GetMapping
+         * public List<User> getAll() {
+         * return userService.getAll();
+         * }
+         */
 
         @Operation(summary = "Get all Users with pagination", description = "Retrieve a paginated list of users. Specify the page number and page size to get a subset of users.")
         @ApiResponses(value = {
@@ -198,6 +207,15 @@ public class UserController {
         }
 
         private UserDTO convertUserToDto(User user) {
-                return modelMapper.map(user, UserDTO.class);
+                UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+
+                // Asignar el email dependiendo de la autenticación
+                if (user.getAccountUserGoogle() != null) {
+                        userDTO.setEmail(user.getAccountUserGoogle().getEmail());
+                } else if (user.getAccountUserEmail() != null) {
+                        userDTO.setEmail(user.getAccountUserEmail().getEmail());
+                }
+
+                return userDTO;
         }
 }

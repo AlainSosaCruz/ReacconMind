@@ -1,24 +1,26 @@
 package com.reacconmind.reacconmind.dto;
 
-import java.time.LocalDateTime;
 
+import java.sql.Timestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class MessageDTO {
     private int idMessage;
-    private int idSender;
-    private int idAddressee;
+    private int sender;
+    private int addressee;
     private String content;
     private String multimedia;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime shippingDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    private Timestamp shippingDate;
+    
 
     public MessageDTO() {}
 
-    public MessageDTO(int idMessage, int idSender, int idAddressee, String content, String multimedia, LocalDateTime shippingDate) {
+    public MessageDTO(int idMessage, int sender, int addressee, String content, String multimedia, Timestamp shippingDate) {
         this.idMessage = idMessage;
-        this.idSender = idSender;
-        this.idAddressee = idAddressee;
+        this.sender = sender;
+        this.addressee = addressee;
         this.content = content;
         this.multimedia = multimedia;
         this.shippingDate = shippingDate;
@@ -32,20 +34,20 @@ public class MessageDTO {
         this.idMessage = idMessage;
     }
 
-    public int getIdSender() {
-        return idSender;
+    public int getSender() {
+        return sender;
     }
 
-    public void setIdSender(int idSender) {
-        this.idSender = idSender;
+    public void setSender(int sender) {
+        this.sender = sender;
     }
 
-    public int getIdAddressee() {
-        return idAddressee;
+    public int getAddressee() {
+        return addressee;
     }
 
-    public void setIdAddressee(int idAddressee) {
-        this.idAddressee = idAddressee;
+    public void setAddressee(int addressee) {
+        this.addressee = addressee;
     }
 
     public String getContent() {
@@ -64,11 +66,11 @@ public class MessageDTO {
         this.multimedia = multimedia;
     }
 
-    public LocalDateTime getShippingDate() {
+    public Timestamp getShippingDate() {
         return shippingDate;
     }
 
-    public void setShippingDate(LocalDateTime shippingDate) {
+    public void setShippingDate(Timestamp shippingDate) {
         this.shippingDate = shippingDate;
     }
 }

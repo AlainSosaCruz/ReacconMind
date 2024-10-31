@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/publicationHashtags")
+@RequestMapping("publicationHashtags")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE })
 @Tag(name = "Publication Hashtags", description = "Provides methods for managing publication and hashtag relationships")
 public class PublicationHashtagController {

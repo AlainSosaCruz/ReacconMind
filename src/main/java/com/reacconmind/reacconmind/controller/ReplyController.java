@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Reply")
 @RestController
-@RequestMapping("/ReacconMind/replies")
+@RequestMapping("/replies")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
 public class ReplyController {
 
@@ -82,7 +84,7 @@ public class ReplyController {
     @Operation(summary = "Get all replies for DTO")
     @ApiResponse(responseCode = "200", description = "Found Replies DTO", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ReplyDTO.class))) })
-    @GetMapping("/dto")
+    @GetMapping("/users")
     public List<ReplyDTO> findAllReplies() {
         return replyRepository.findAllReplies();
     }
