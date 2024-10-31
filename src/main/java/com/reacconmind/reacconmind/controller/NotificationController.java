@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.reacconmind.reacconmind.dto.NotificationDTO;
 import com.reacconmind.reacconmind.model.Notification;
-import com.reacconmind.reacconmind.model.Notification.TypeNotification;
+import com.reacconmind.reacconmind.model.TypeNotification;
 import com.reacconmind.reacconmind.model.User;
 import com.reacconmind.reacconmind.service.NotificationService;
 import com.reacconmind.reacconmind.service.UserService;
@@ -31,7 +31,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Tag(name = "Notification")
-@RequestMapping("ReacconMind/notifications")
+@RequestMapping("notifications")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
                 RequestMethod.PUT })
 public class NotificationController {
@@ -71,15 +71,15 @@ public class NotificationController {
                 return ResponseEntity.ok().build();
         }
 
-        @Operation(summary = "Get unread notifications", description = "Get all notifications that have not been read.")
+        @Operation(summary = "Get unread notifications for a user", description = "Get all notifications that have not been read by a specific user.")
         @ApiResponse(responseCode = "200", description = "List of unread notifications obtained correctly", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Notification.class))) })
-        @GetMapping("/unread")
-        public ResponseEntity<List<Notification>> getUnreadNotifications() {
-                List<Notification> unreadNotifications = notificationService.getUnreadNotifications();
-                return ResponseEntity.ok(unreadNotifications);
-        }
-
+        @GetMapping("/unread/{userId}")
+        public ResponseEntity<List<Notification>> getUnreadNotifications(@PathVariable Integer userId) {
+            List<Notification> unreadNotifications = notificationService.getUnreadNotifications(userId);
+            return ResponseEntity.ok(unreadNotifications);
+        }        
+        
         @Operation(summary = "Create notification of like", description = "Create and send a notification of like.")
         @ApiResponse(responseCode = "200", description = "Notification created correctly", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Notification.class))) })

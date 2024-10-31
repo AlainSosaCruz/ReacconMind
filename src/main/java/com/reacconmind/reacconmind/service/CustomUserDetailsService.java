@@ -6,19 +6,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.reacconmind.reacconmind.model.User;
-import com.reacconmind.reacconmind.repository.UserRepository;
+import com.reacconmind.reacconmind.model.AccountUserEmail;
+import com.reacconmind.reacconmind.repository.AccountUserEmailRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountUserEmailRepository userEmailRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username)
         throws UsernameNotFoundException {
-        User user = userRepository
+        AccountUserEmail user = userEmailRepository
             .findUserByEmail(username)
             .orElseThrow(() ->
                 new UsernameNotFoundException(

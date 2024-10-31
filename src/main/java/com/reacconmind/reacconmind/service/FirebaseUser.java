@@ -22,40 +22,53 @@ import java.util.UUID;
 
 @Service
 public class FirebaseUser {
-    private static final String BUCKET_NAME = "reacconmind-e99ee.appspot.com"; // Cambia al nombre de tu bucket
+    private static final String BUCKET_NAME = "reacconmind-e99ee.appspot.com";
 
-    public String upload(MultipartFile multipartFile) {
+    // Clase interna para almacenar las URLs
+    public static class UploadResponse {
+        private String originalUrl;
+        private String thumbnailUrl;
+
+        public UploadResponse(String originalUrl, String thumbnailUrl) {
+            this.originalUrl = originalUrl;
+            this.thumbnailUrl = thumbnailUrl;
+        }
+
+        public String getOriginalUrl() {
+            return originalUrl;
+        }
+
+        public String getThumbnailUrl() {
+            return thumbnailUrl;
+        }
+    }
+
+    public UploadResponse upload(MultipartFile multipartFile) {
         try {
-            // Verificar que el archivo no esté vacío
             if (multipartFile.isEmpty()) {
-                return "The image file is empty.";
+                return null; // O lanza una excepción según tus necesidades
             }
 
-            // Generar nombres de archivo únicos
             String originalFileName = generateUniqueFileName(multipartFile.getOriginalFilename());
             String thumbnailFileName = "thumb_" + originalFileName;
 
-            // Convertir el archivo a File
             File originalFile = convertToFile(multipartFile, originalFileName);
-            // Crear miniatura
             File thumbnailFile = createThumbnail(originalFile, thumbnailFileName);
 
-            // Subir el archivo original
             String originalUrl = uploadFile(originalFile, originalFileName);
-            // Subir la miniatura
             String thumbnailUrl = uploadFile(thumbnailFile, thumbnailFileName);
 
-            // Eliminar archivos temporales después de subir
+            // Eliminar archivos temporales
             originalFile.delete();
             thumbnailFile.delete();
 
-            return String.format("Original URL: %s, Thumbnail URL: %s", originalUrl, thumbnailUrl);
+            return new UploadResponse(originalUrl, thumbnailUrl);
         } catch (IOException e) {
             e.printStackTrace();
-            return "The image could not be uploaded due to an I/O error.";
+            return null; // O lanza una excepción según tus necesidades
         } catch (Exception e) {
             e.printStackTrace();
-            return "The image could not be uploaded.";
+            return null; // O lanza una excepción según tus necesidades
         }
     }
 
@@ -66,7 +79,7 @@ public class FirebaseUser {
 
     private String getExtension(String fileName) {
         int lastIndex = fileName.lastIndexOf(".");
-        return (lastIndex == -1) ? "" : fileName.substring(lastIndex); // Manejar archivos sin extensión
+        return (lastIndex == -1) ? "" : fileName.substring(lastIndex);
     }
 
     private File convertToFile(MultipartFile multipartFile, String fileName) throws IOException {
@@ -87,20 +100,28 @@ public class FirebaseUser {
 
     private String uploadFile(File file, String fileName) throws IOException {
         BlobId blobId = BlobId.of(BUCKET_NAME, fileName);
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/jpeg").build(); // Ajustar el tipo de
-                                                                                              // contenido según el
-                                                                                              // archivo
-        InputStream inputStream = ImageService.class.getClassLoader()
-                .getResourceAsStream("firebase-privateAlain-key.json");
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                .setContentType("image/jpg")
+                .build();
 
-        // Cargar las credenciales de Google
-        Credentials credentials = GoogleCredentials.fromStream(inputStream);
-        Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+        try (InputStream inputStream = FirebaseUser.class.getClassLoader()
+                .getResourceAsStream("firebase-privateAlain-key.json")) {
+            if (inputStream == null) {
+                throw new IOException("Failed to load Google Cloud credentials.");
+            }
 
-        // Subir el archivo a Google Cloud Storage
-        storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+            Credentials credentials = GoogleCredentials.fromStream(inputStream);
+            Storage storage = StorageOptions.newBuilder()
+                    .setCredentials(credentials)
+                    .build()
+                    .getService();
 
-        // Construir la URL de descarga
+            storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("Error uploading file to Google Cloud Storage: " + e.getMessage());
+        }
+
         String downloadURL = "https://firebasestorage.googleapis.com/v0/b/" + BUCKET_NAME + "/o/%s?alt=media";
         return String.format(downloadURL, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
     }

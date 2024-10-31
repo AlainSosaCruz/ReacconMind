@@ -30,4 +30,5 @@ Bd/Reparto.txt
 .project
 .settings/
 
-
+src/main/resources/firebase-private-key.json
+src/main/resources/firebase-privateAlain-key.json

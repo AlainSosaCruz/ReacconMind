@@ -1,4 +1,4 @@
-package com.reacconmind.reacconmind.controller;
+/* package com.reacconmind.reacconmind.controller;
 
 import com.reacconmind.reacconmind.dto.ImageDTO;
 import com.reacconmind.reacconmind.model.Image;
@@ -166,3 +166,4 @@ public class ImageController {
         return imageRepository.findAllImages();
     }
 }
+ */

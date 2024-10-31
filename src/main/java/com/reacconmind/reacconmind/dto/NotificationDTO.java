@@ -4,15 +4,15 @@ import com.reacconmind.reacconmind.model.User;
 
 import java.sql.Date;
 
-import com.reacconmind.reacconmind.model.Notification.State;
-import com.reacconmind.reacconmind.model.Notification.TypeNotification;
+import com.reacconmind.reacconmind.model.NotificationStatus;
+import com.reacconmind.reacconmind.model.TypeNotification;
 
 public class NotificationDTO {
     private int idNotification;
     private User idUser;
     private TypeNotification typeNotification;
     private String content;
-    private State state = State.Unread;
+    private NotificationStatus state = NotificationStatus.Unread;
     private Date dateNotification;
     
     public int getIdNotification() {
@@ -39,10 +39,10 @@ public class NotificationDTO {
     public void setContent(String content) {
         this.content = content;
     }
-    public State getState() {
+    public NotificationStatus getState() {
         return state;
     }
-    public void setState(State state) {
+    public void setState(NotificationStatus state) {
         this.state = state;
     }
     public Date getDateNotification() {

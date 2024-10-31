@@ -1,58 +1,109 @@
 package com.reacconmind.reacconmind.service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.reacconmind.reacconmind.dto.FollowerDTO;
 import com.reacconmind.reacconmind.model.Follower;
 import com.reacconmind.reacconmind.model.FollowerPK;
-import com.reacconmind.reacconmind.model.User;
+import com.reacconmind.reacconmind.model.Follower.FollowingType;
+import com.reacconmind.reacconmind.repository.BotRepository;
 import com.reacconmind.reacconmind.repository.FollowerRepository;
 import com.reacconmind.reacconmind.repository.UserRepository;
 
+import java.sql.Timestamp;
+
 @Service
 public class FollowerService {
-
     @Autowired
     private FollowerRepository followerRepository;
-
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private BotRepository botRepository;
 
-    // Seguir a un usuario
-    public Follower followUser(int followerId, int followingId) {
-        Optional<User> follower = userRepository.findById(followerId);
-        Optional<User> following = userRepository.findById(followingId);
+    public FollowerDTO follow(Follower follower) {
+        FollowerPK followerPK = follower.getIdFollower();
+        validateFollowerIds(followerPK);
+        validateFollowerExists(followerPK.getIdUserFollower());
+        validateNotFollowingSelf(followerPK);
+        validateTargetExists(followerPK, "follow");
 
-        if (follower.isPresent() &&
-                following.isPresent() &&
-                followerId != followingId) {
-            Follower followerEntity = new Follower(
-                    following.get(),
-                    follower.get());
-            return followerRepository.save(followerEntity);
+        followerRepository.save(follower);
+
+        return new FollowerDTO(
+                followerPK.getIdUserFollower(),
+                followerPK.getIdFollowing(),
+                followerPK.getFollowingType().name(),
+                new Timestamp(System.currentTimeMillis()));
+    }
+    
+    public void unfollow(FollowerDTO followerDto) {
+        FollowingType type;
+        try {
+            type = FollowingType.valueOf(followerDto.getFollowingType());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid following type: " + followerDto.getFollowingType());
         }
-        throw new IllegalArgumentException(
-                "Usuario no válido o los IDs son iguales");
+    
+        FollowerPK followerPK = new FollowerPK(followerDto.getIdUserFollower(), followerDto.getIdFollowing(), type);
+    
+        validateFollowerIds(followerPK);
+        validateFollowerExists(followerPK.getIdUserFollower());
+        validateTargetExists(followerPK, "unfollow");
+
+        followerRepository.deleteById(followerPK);
     }
 
-    public void unfollowUser(int followerId, int followingId) {
-        FollowerPK id = new FollowerPK(followingId, followerId);
-        followerRepository.deleteById(id);
+    public List<FollowerDTO> getFollowings(int userId) {
+        List<Follower> followings = followerRepository.findFollowingsByUserId(userId);
+        return followings.stream()
+                .map(f -> new FollowerDTO(f.getIdFollower().getIdUserFollower(), f.getIdFollower().getIdFollowing()))                
+                .collect(Collectors.toList());
     }
 
-    public List<Follower> getFollowers(int userId) {
-        return followerRepository.findFollowersByUserId(userId);
+
+    public List<FollowerDTO> getFollowers(int userId) {
+         List<Follower> followers = followerRepository.findFollowersByUserId(userId);
+         return followers.stream()
+                 .map(f -> new FollowerDTO(f.getIdFollower().getIdUserFollower()))  //Constructor con solo idUserFollower
+                 .collect(Collectors.toList());
+    }
+    
+    // Validations
+    private void validateFollowerIds(FollowerPK followerPK) {
+        if (followerPK.getIdUserFollower() <= 0 || followerPK.getIdFollowing() <= 0) {
+            throw new IllegalArgumentException("IDs must be greater than zero.");
+        }
     }
 
-    public List<Follower> getFollowing(int userId) {
-        return followerRepository.findFollowingByUserId(userId);
+    private void validateFollowerExists(int idUserFollower) {
+        if (!userRepository.existsById(idUserFollower)) {
+            throw new IllegalArgumentException("The follower does not exist.");
+        }
     }
 
-    public boolean isFollowing(int followerId, int followingId) {
-        FollowerPK id = new FollowerPK(followingId, followerId);
-        return followerRepository.existsById(id);
+    private void validateNotFollowingSelf(FollowerPK followerPK) {
+        if (followerPK.getIdUserFollower() == followerPK.getIdFollowing()) {
+            throw new IllegalArgumentException("A user cannot follow themselves.");
+        }
     }
+
+    private void validateTargetExists(FollowerPK followerPK, String action) {
+        boolean targetExists = switch (followerPK.getFollowingType()) {
+            case User -> userRepository.existsById(followerPK.getIdFollowing());
+            case Bot -> botRepository.existsById(followerPK.getIdFollowing());
+            default -> throw new IllegalArgumentException("Invalid following type.");
+        };
+    
+        if (!targetExists) {
+            throw new IllegalArgumentException(
+                    "The " + followerPK.getFollowingType().name().toLowerCase() + " to " + action + " does not exist.");
+        }
+    }
+    
+
 }

@@ -1,12 +1,14 @@
 package com.reacconmind.reacconmind.service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-import com.reacconmind.reacconmind.dto.BotDTO;
-import com.reacconmind.reacconmind.model.ThemeBotType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.reacconmind.reacconmind.dto.BotDTO;
 import com.reacconmind.reacconmind.model.Bot;
 import com.reacconmind.reacconmind.repository.BotRepository;
 
@@ -19,63 +21,51 @@ public class BotService {
     @Autowired
     private BotRepository repository;
 
-    // @Autowired
-    // private MultimediaRepository multimediaRepository;
 
-    public void save(Bot bot) {
-        repository.save(bot);
-    }
-
-    public List<Bot> getAll() {
+    public List<Bot> getAllBots() {
         return repository.findAll();
     }
 
-    public Bot getBotById(Integer idBot) {
-        return repository.findById(idBot).get();
+    public Optional<Bot> getBotById(int idBot) {
+        return repository.findByIdBot(idBot);
     }
 
-    /*public Bot updateBot(int idBot, Bot updatedBot) {
-        if (updatedBot.getName() == null || updatedBot.getTheme() == null) {
-            throw new IllegalArgumentException("El nombre y el tema no pueden ser nulos");
-        }
+    public Bot createBot(Bot bot) {
+        return repository.save(bot);
+    }
 
-        return repository.findById(idBot).map(bot -> {
+    public Bot updateBot(int idBot, Bot updatedBot) {
+        Optional<Bot> existingBot = repository.findByIdBot(idBot);
+        if (existingBot.isPresent()) {
+            Bot bot = existingBot.get();
             bot.setName(updatedBot.getName());
             bot.setTheme(updatedBot.getTheme());
             bot.setMultimedia(updatedBot.getMultimedia());
             return repository.save(bot);
-        }).orElseThrow(() -> new IllegalArgumentException("Bot no encontrado con ID: " + idBot));
-    }*/
-
-    public void deleteBot(int idBot) {
-        if (repository.existsById(idBot)) {
-            repository.deleteById(idBot);
-        } else {
-            throw new IllegalArgumentException("Bot no encontrado con ID: " + idBot);
         }
+        return null;
     }
 
-    // Conversión de Bot a BotDTO
-    public BotDTO convertToDTO(Bot bot) {
+    public void deleteBot(int idBot) {
+        repository.deleteById(idBot);
+    }
+
+    public BotDTO convertEntityToDTO(Bot bot) {
         BotDTO dto = new BotDTO();
         dto.setIdBot(bot.getIdBot());
         dto.setName(bot.getName());
-        dto.setTheme(bot.getTheme().name()); // Convertir Enum a String
-        //dto.setIdMultimedia(bot.getMultimedia() != null ? bot.getMultimedia().getIdMultimedia() : 0); // Evitar null
+        dto.setTheme(bot.getTheme());
+        dto.setShippingDate(Timestamp.valueOf(LocalDateTime.now())); 
+        dto.setMultimedia(bot.getMultimedia());
         return dto;
     }
 
-    // Conversión de BotDTO a Bot
-    public Bot convertToEntity(BotDTO dto) {
+    public Bot convertDTOToEntity(BotDTO dto) {
         Bot bot = new Bot();
         bot.setIdBot(dto.getIdBot());
         bot.setName(dto.getName());
-        bot.setTheme(ThemeBotType.valueOf(dto.getTheme())); // Convertir String a Enum
-
-        // Obtener multimedia por su ID
-        /*Multimedia multimedia = multimediaRepository.findById(dto.getIdMultimedia()).orElse(null);
-        bot.setMultimedia(multimedia);*/
-
+        bot.setTheme(dto.getTheme());
+        bot.setMultimedia(dto.getMultimedia());
         return bot;
     }
 }

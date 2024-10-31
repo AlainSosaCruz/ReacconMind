@@ -19,8 +19,8 @@ import com.reacconmind.reacconmind.model.FollowNotificationStrategy;
 import com.reacconmind.reacconmind.model.LikeNotificationStrategy;
 import com.reacconmind.reacconmind.model.MessageNotificationStrategy;
 import com.reacconmind.reacconmind.model.Notification;
-import com.reacconmind.reacconmind.model.Notification.State;
-import com.reacconmind.reacconmind.model.Notification.TypeNotification;
+import com.reacconmind.reacconmind.model.NotificationStatus;
+import com.reacconmind.reacconmind.model.TypeNotification;
 import com.reacconmind.reacconmind.repository.NotificationRepository;
 import com.reacconmind.reacconmind.repository.NotificationStrategy;
 
@@ -68,16 +68,25 @@ public class NotificationService {
         Optional<Notification> notificacionOpt = repository.findById(idNotification);
         if (notificacionOpt.isPresent()) {
             Notification notificacion = notificacionOpt.get();
-            notificacion.setState(State.Read);
+            notificacion.setState(NotificationStatus.Read);
             repository.save(notificacion);
         } else {
             throw new NoSuchElementException("Notification not found");
         }
     }
 
-    public List<Notification> getUnreadNotifications() {
+    public List<Notification> getUnreadNotifications(Integer userId) {
         return repository.findAll().stream()
-                .filter(notification -> notification.getState() == State.Unread)
+                .filter(notification -> {
+                    boolean isUnread = notification.getState() == NotificationStatus.Unread;
+                    boolean isForUser = notification.getIdUser() != null && notification.getIdUser().getIdUser() == userId;
+                    // Esto te ayudará a ver qué filtros están fallando
+                    System.out.println("Notification ID: " + notification.getIdNotification() + 
+                                       " | Unread: " + isUnread + 
+                                       " | For User: " + isForUser + 
+                                       " | User ID in Notification: " + (notification.getIdUser() != null ? notification.getIdUser().getIdUser() : "null"));
+                    return isUnread && isForUser;
+                })
                 .collect(Collectors.toList());
     }
 
