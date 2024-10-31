@@ -33,6 +33,9 @@ public class Comment {
 
     }
 
+    public Comment() {
+    }
+
     // Getters y Setters
     public int getIdComment() {
         return idComment;

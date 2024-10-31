@@ -1,11 +1,13 @@
 package com.reacconmind.reacconmind.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class GoogleAuth {
@@ -14,9 +16,11 @@ public class GoogleAuth {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idGoogleAuth;
 
-    @ManyToOne
-    @JoinColumn(name = "idUser", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "idUser", referencedColumnName = "idUser")
+    @JsonBackReference
     private User user;
+    private String email;
 
     private String googleId;
 
@@ -42,5 +46,13 @@ public class GoogleAuth {
 
     public void setGoogleId(String googleId) {
         this.googleId = googleId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

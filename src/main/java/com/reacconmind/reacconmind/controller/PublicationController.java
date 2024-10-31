@@ -1,33 +1,25 @@
 package com.reacconmind.reacconmind.controller;
+
 import com.reacconmind.reacconmind.dto.PublicationDTO;
 import com.reacconmind.reacconmind.model.Publication;
 import com.reacconmind.reacconmind.repository.PublicationRepository;
 import com.reacconmind.reacconmind.service.PublicationService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-
+@Tag(name = "Publication")
 @RestController
-@RequestMapping("/ReacconMind/publications")
+@RequestMapping("/publications")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
 public class PublicationController {
 
@@ -51,38 +43,48 @@ public class PublicationController {
     @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable Integer id) {
         Publication publication = service.getByIdPublication(id);
-        return new ResponseEntity<Publication>(publication, HttpStatus.OK);
+        return new ResponseEntity<>(publication, HttpStatus.OK);
     }
 
+    @Operation(summary = "Create a new publication")
+    @ApiResponse(responseCode = "200", description = "Publication created", content = @Content)
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Publication publication) {
         service.save(publication);
-        return new ResponseEntity<String>("Publication created", HttpStatus.OK);
+        return new ResponseEntity<>("Publication created", HttpStatus.OK);
     }
 
+    @Operation(summary = "Update an existing publication")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Publication updated", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid publication ID supplied", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Publication not found", content = @Content) })
     @PutMapping("{id}")
     public ResponseEntity<?> update(@RequestBody Publication publication, @PathVariable Integer id) {
         Publication existingPublication = service.getByIdPublication(id);
         publication.setIdPublication(existingPublication.getIdPublication());
         service.save(publication);
-        return new ResponseEntity<String>("Publication updated", HttpStatus.OK);
+        return new ResponseEntity<>("Publication updated", HttpStatus.OK);
     }
 
+    @Operation(summary = "Delete a publication by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Publication deleted", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Publication not found", content = @Content) })
     @DeleteMapping("{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         service.delete(id);
-        return new ResponseEntity<String>("Publication deleted", HttpStatus.OK);
+        return new ResponseEntity<>("Publication deleted", HttpStatus.OK);
     }
 
     @Autowired
     private PublicationRepository publicationRepository;
-    @GetMapping("/publications/juan")
+
+    @Operation(summary = "Get all publications for DTO")
+    @ApiResponse(responseCode = "200", description = "Found Publications DTO", content = {
+            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PublicationDTO.class))) })
+    @GetMapping("/users")
     public List<PublicationDTO> getAllPublications() {
         return publicationRepository.findAllPublications();
     }
-
-
-
-
-
 }

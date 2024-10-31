@@ -1,16 +1,16 @@
 package com.reacconmind.reacconmind.model;
 
 import java.io.Serializable;
+import jakarta.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
 public class ReactionPK implements Serializable {
     private int idUser;
     private int idPublication;
 
-    // Constructor vacío (requerido por JPA)
     public ReactionPK() {}
 
-    // Constructor con parámetros
     public ReactionPK(int idUser, int idPublication) {
         this.idUser = idUser;
         this.idPublication = idPublication;
@@ -33,14 +33,12 @@ public class ReactionPK implements Serializable {
         this.idPublication = idPublication;
     }
 
-    // Sobrescribir equals y hashCode para que JPA los utilice
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ReactionPK)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         ReactionPK that = (ReactionPK) o;
-        return idUser == that.idUser &&
-                idPublication == that.idPublication;
+        return idUser == that.idUser && idPublication == that.idPublication;
     }
 
     @Override

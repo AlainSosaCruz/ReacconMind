@@ -1,7 +1,5 @@
 package com.reacconmind.reacconmind.service;
 
-
-
 import com.reacconmind.reacconmind.model.Reaction;
 import com.reacconmind.reacconmind.model.ReactionPK;
 import com.reacconmind.reacconmind.repository.ReactionRepository;
@@ -28,12 +26,12 @@ public class ReactionService {
 
     // Método para obtener reacciones por usuario
     public List<Reaction> getReactionsByUser(int idUser) {
-        return reactionRepository.findByIdUser(idUser);
+        return reactionRepository.findById_IdUser(idUser);
     }
 
     // Método para obtener reacciones por publicación
     public List<Reaction> getReactionsByPublication(int idPublication) {
-        return reactionRepository.findByIdPublication(idPublication);
+        return reactionRepository.findById_IdPublication(idPublication);
     }
 
     // Método para eliminar una reacción por su clave primaria compuesta

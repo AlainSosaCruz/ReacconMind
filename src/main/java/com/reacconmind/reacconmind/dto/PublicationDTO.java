@@ -7,8 +7,8 @@ public class PublicationDTO {
 
     private String userName;
 
-    private String botName; // Agregamos el nombre del bot
-    private ThemeBotType botTheme; // Agregamos el tema del bot
+    private String botName;
+    private ThemeBotType botTheme;
 
     private String content;
 

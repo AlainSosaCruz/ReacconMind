@@ -27,8 +27,6 @@ public class Image {
     @Column(name = "thumbnail", length = 2083)
     private String thumbnail;
 
-    @Column(name = "uploadDate", nullable = false)
-    private Timestamp uploadDate;
 
     @ManyToOne
     @JoinColumn(name = "idPublication", nullable = true)
@@ -62,13 +60,7 @@ public class Image {
         this.thumbnail = thumbnail;
     }
 
-    public Timestamp getUploadDate() {
-        return uploadDate;
-    }
 
-    public void setUploadDate(Timestamp uploadDate) {
-        this.uploadDate = uploadDate;
-    }
 
     public Publication getPublication() {
         return publication;

@@ -14,10 +14,13 @@ import com.reacconmind.reacconmind.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Email;
 
 @RestController
-@RequestMapping("/password")
+@RequestMapping("/passwordResets")
+@Tag(name = "Password Reset", description = "Endpoints for requesting and validating password reset tokens.")
+
 public class PasswordResetTokenController {
 
     @Autowired

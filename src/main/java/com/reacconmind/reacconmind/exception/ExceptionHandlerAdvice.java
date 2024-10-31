@@ -32,7 +32,7 @@ public class ExceptionHandlerAdvice {
         );
     }
 
-    @ExceptionHandler(NullPointerException.class)
+    /*@ExceptionHandler(NullPointerException.class)
     public ResponseEntity<String> handleNullPointerException(
         NullPointerException e
     ) {
@@ -40,7 +40,7 @@ public class ExceptionHandlerAdvice {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
             "A null pointer exception occurred"
         );
-    }
+    }*/
 
     @ExceptionHandler(ArrayIndexOutOfBoundsException.class)
     public ResponseEntity<String> handleArrayIndexOutOfBoundsException(

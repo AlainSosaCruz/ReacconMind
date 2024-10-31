@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ReactionRepository extends JpaRepository<Reaction, ReactionPK> {
-    List<Reaction> findByIdUser(int idUser);
-    List<Reaction> findByIdPublication(int idPublication);
+    List<Reaction> findById_IdUser(Integer idUser);  // Correcto acceso a idUser dentro de ReactionPK
+    List<Reaction> findById_IdPublication(Integer idPublication);  // Correcto acceso a idPublication dentro de ReactionPK
 }

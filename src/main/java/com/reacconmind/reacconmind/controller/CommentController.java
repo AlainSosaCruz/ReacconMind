@@ -1,11 +1,8 @@
 package com.reacconmind.reacconmind.controller;
 
 import com.reacconmind.reacconmind.dto.CommentDTO;
-import com.reacconmind.reacconmind.dto.ImageDTO;
-import com.reacconmind.reacconmind.dto.PublicationDTO;
 import com.reacconmind.reacconmind.model.Comment;
 import com.reacconmind.reacconmind.repository.CommentRepository;
-import com.reacconmind.reacconmind.repository.PublicationRepository;
 import com.reacconmind.reacconmind.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -13,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +18,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Comment")
 @RestController
-@RequestMapping("/ReacconMind/comments")
+@RequestMapping("/comments")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
 public class CommentController {
 
     @Autowired
     private CommentService service;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Operation(summary = "Get all comments")
     @ApiResponse(responseCode = "200", description = "Found Comments", content = {
@@ -91,13 +93,8 @@ public class CommentController {
         }
     }
 
-    @Autowired
-    private CommentRepository commentRepository;
-    @GetMapping("/comments/juan")
+    @GetMapping("/users")
     public List<CommentDTO> findAllComments() {
         return commentRepository.findAllComments();
     }
-
-
-
 }
