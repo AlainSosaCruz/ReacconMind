@@ -34,7 +34,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
         RequestMethod.PUT })
         
-@Tag(name = "Bot", description = "Provides methods to manage Bots.")
+@Tag(name = "Bot", description = "Provides methods to manage bots.")
 public class BotController {
 
 

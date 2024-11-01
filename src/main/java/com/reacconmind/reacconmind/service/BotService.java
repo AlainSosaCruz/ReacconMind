@@ -44,7 +44,7 @@ public class BotService {
             Bot bot = existingBot.get();
             bot.setName(updatedBot.getName());
             bot.setTheme(updatedBot.getTheme());
-            bot.setMultimedia(updatedBot.getMultimedia());
+            // bot.setMultimedia(updatedBot.getMultimedia());
             return repository.save(bot);
         }
         return null;
@@ -60,7 +60,7 @@ public class BotService {
         dto.setName(bot.getName());
         dto.setTheme(bot.getTheme());
         dto.setShippingDate(Timestamp.valueOf(LocalDateTime.now())); 
-        dto.setMultimedia(bot.getMultimedia());
+        // dto.setMultimedia(bot.getMultimedia());
         return dto;
     }
 
@@ -69,7 +69,7 @@ public class BotService {
         bot.setIdBot(dto.getIdBot());
         bot.setName(dto.getName());
         bot.setTheme(dto.getTheme());
-        bot.setMultimedia(dto.getMultimedia());
+        // bot.setMultimedia(dto.getMultimedia());
         return bot;
     }
 }

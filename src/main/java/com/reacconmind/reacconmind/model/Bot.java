@@ -23,17 +23,17 @@ public class Bot {
     @Column(nullable = false)
     private ThemeBotType theme = ThemeBotType.CombinatedMedia;
 
-    @ManyToOne
-    @JoinColumn(name = "idMultimedia", nullable = true)
-    private Multimedia multimedia;
+    // @ManyToOne
+    // @JoinColumn(name = "idMultimedia", nullable = true)
+    // private Multimedia multimedia;
     
     public Bot() {}
 
-    public Bot(int idBot, String name, ThemeBotType theme, Multimedia multimedia) {
+    public Bot(int idBot, String name, ThemeBotType theme) {
         this.idBot = idBot;
         this.name = name;
         this.theme = theme;
-        this.multimedia = multimedia;
+        // this.multimedia = multimedia;
     }
 
 
@@ -62,12 +62,12 @@ public class Bot {
         this.theme = theme;
     }
 
-    public Multimedia getMultimedia() {
-        return multimedia;
-    }
+    // public Multimedia getMultimedia() {
+    //     return multimedia;
+    // }
 
-    public void setMultimedia(Multimedia multimedia) {
-        this.multimedia = multimedia;
-    }
+    // public void setMultimedia(Multimedia multimedia) {
+    //     this.multimedia = multimedia;
+    // }
 }
 

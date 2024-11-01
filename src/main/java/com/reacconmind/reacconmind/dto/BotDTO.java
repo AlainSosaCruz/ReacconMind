@@ -16,7 +16,7 @@ public class BotDTO {
     private ThemeBotType theme;
     @JsonProperty("shippingDate")
     private Timestamp shippingDate;
-    private Multimedia multimedia;
+    // private Multimedia multimedia;
 
     public BotDTO() {
     }
@@ -59,13 +59,13 @@ public class BotDTO {
         this.shippingDate = shippingDate;
     }
 
-    public Multimedia getMultimedia() {
-        return multimedia;
-    }
+    // public Multimedia getMultimedia() {
+    //     return multimedia;
+    // }
 
-    public void setMultimedia(Multimedia multimedia) {
-        this.multimedia = multimedia;
-    }
+    // public void setMultimedia(Multimedia multimedia) {
+    //     this.multimedia = multimedia;
+    // }
 
     @Override
     public String toString() {
