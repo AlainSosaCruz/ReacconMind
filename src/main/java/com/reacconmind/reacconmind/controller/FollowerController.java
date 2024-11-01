@@ -42,9 +42,9 @@ public class FollowerController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Get a list of followings with pagination", description = "A user can stop following a user.")
-     @ApiResponse(responseCode = "200", description = "Unfollowed user.", content = {
-            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BotDTO.class))) })
+    @Operation(summary = "Get a list of followings with pagination", description = "A user can get the list of followings.")
+    @ApiResponse(responseCode = "200", description = "List successfully obtained.", content = {
+            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Follower.class))) })
     @GetMapping("/followings/{userId}")
     public ResponseEntity<List<FollowerDTO>> getFollowings(
             @PathVariable int userId,
@@ -68,13 +68,24 @@ public class FollowerController {
     // return ResponseEntity.ok(followings);
     // }
 
-    @Operation(summary = "Get a list of follower ", description = "A user can stop following a user.")
-    @ApiResponse(responseCode = "200", description = "Unfollowed user.", content = {
-            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BotDTO.class))) })
+    @Operation(summary = "Get a list of follower with pagination", description = "A user can get the list of followers.")
+    @ApiResponse(responseCode = "200", description = "List successfully obtained.", content = {
+            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Follower.class))) })
     @GetMapping("/{userId}")
-    public ResponseEntity<List<FollowerDTO>> getFollowers(@PathVariable int userId) {
-        List<FollowerDTO> followers = followerService.getFollowers(userId);
+    public ResponseEntity<List<FollowerDTO>> getFollowers(
+            @PathVariable int userId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        List<FollowerDTO> followers = followerService.getFollowers(userId, page, size);
         return ResponseEntity.ok(followers);
     }
+
+    // @GetMapping("/{userId}")
+    // public ResponseEntity<List<FollowerDTO>> getFollowers(@PathVariable int
+    // userId) {
+    // List<FollowerDTO> followers = followerService.getFollowers(userId);
+    // return ResponseEntity.ok(followers);
+    // }
 
 }

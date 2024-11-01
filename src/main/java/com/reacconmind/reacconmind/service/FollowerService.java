@@ -81,11 +81,19 @@ public List<FollowerDTO> getFollowings(int userId, int page, int size) {
     // }
 
 
-    public List<FollowerDTO> getFollowers(int userId) {
-         List<Follower> followers = followerRepository.findFollowersByUserId(userId);
-         return followers.stream()
-                 .map(f -> new FollowerDTO(f.getIdFollower().getIdUserFollower()))  
-                 .collect(Collectors.toList());
+    // public List<FollowerDTO> getFollowers(int userId) {
+    //      List<Follower> followers = followerRepository.findFollowersByUserId(userId);
+    //      return followers.stream()
+    //              .map(f -> new FollowerDTO(f.getIdFollower().getIdUserFollower()))  
+    //              .collect(Collectors.toList());
+    // }
+    public List<FollowerDTO> getFollowers(int userId, int page, int size) {
+        PageRequest pageReq = PageRequest.of(page, size);
+        Page<Follower> followers = followerRepository.findFollowersByUserId(userId, pageReq);
+    
+        return followers.getContent().stream()
+                .map(f -> new FollowerDTO(f.getIdFollower().getIdUserFollower()))
+                .collect(Collectors.toList());
     }
     
     // Validations
