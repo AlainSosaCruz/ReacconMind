@@ -5,16 +5,16 @@ import com.reacconmind.reacconmind.model.ReactionPK;
 import com.reacconmind.reacconmind.service.ReactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@Tag(name = "Reactions", description = "Operations related to reaction management.")
+@Tag(name = "Reaction", description = "Operations related to reaction management.")
 @RestController
 @RequestMapping("/reactions")
 public class ReactionController {
@@ -22,25 +22,36 @@ public class ReactionController {
     @Autowired
     private ReactionService reactionService;
 
-    @Operation(summary = "Retrieve all reactions")
+    @Operation(summary = "Retrieve all reactions with pagination")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved all reactions")
     @GetMapping
-    public List<Reaction> getAllReactions() {
-        return reactionService.getAllReactions();
+    public Page<Reaction> getAllReactions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return reactionService.getAllReactions(pageable);
     }
 
-    @Operation(summary = "Retrieve reactions by user ID")
+    @Operation(summary = "Retrieve reactions by user ID with pagination")
     @ApiResponse(responseCode = "200", description = "Successfully found reactions for the specified user")
     @GetMapping("/user/{idUser}")
-    public List<Reaction> getReactionsByUserId(@PathVariable int idUser) {
-        return reactionService.getReactionsByUser(idUser);
+    public Page<Reaction> getReactionsByUserId(
+            @PathVariable int idUser,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return reactionService.getReactionsByUser(idUser, pageable);
     }
 
-    @Operation(summary = "Retrieve reactions by publication ID")
+    @Operation(summary = "Retrieve reactions by publication ID with pagination")
     @ApiResponse(responseCode = "200", description = "Successfully found reactions for the specified publication")
     @GetMapping("/publication/{idPublication}")
-    public List<Reaction> getReactionsByPublicationId(@PathVariable int idPublication) {
-        return reactionService.getReactionsByPublication(idPublication);
+    public Page<Reaction> getReactionsByPublicationId(
+            @PathVariable int idPublication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return reactionService.getReactionsByPublication(idPublication, pageable);
     }
 
     @Operation(summary = "Create a new reaction")

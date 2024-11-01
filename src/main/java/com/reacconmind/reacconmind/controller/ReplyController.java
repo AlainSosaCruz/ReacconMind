@@ -12,13 +12,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Replies", description = "Operations related to reply management.")
+@Tag(name = "Reply", description = "Operations related to reply management.")
 @RestController
 @RequestMapping("/replies")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
@@ -27,12 +30,19 @@ public class ReplyController {
     @Autowired
     private ReplyService service;
 
-    @Operation(summary = "Get all replies")
+    @Autowired
+    private ReplyRepository replyRepository;
+
+    @Operation(summary = "Get all replies with pagination")
     @ApiResponse(responseCode = "200", description = "Found Replies", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Reply.class))) })
     @GetMapping
-    public List<Reply> getAll() {
-        return service.getAllReplies();
+    public ResponseEntity<Page<Reply>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Reply> repliesPage = service.getAllReplies(pageable);
+        return new ResponseEntity<>(repliesPage, HttpStatus.OK);
     }
 
     @Operation(summary = "Get a reply by its ID")
@@ -78,14 +88,5 @@ public class ReplyController {
         return new ResponseEntity<>("Reply deleted", HttpStatus.OK);
     }
 
-    @Autowired
-    private ReplyRepository replyRepository;
 
-    @Operation(summary = "Get all replies for DTO")
-    @ApiResponse(responseCode = "200", description = "Found Replies DTO", content = {
-            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ReplyDTO.class))) })
-    @GetMapping("/users")
-    public List<ReplyDTO> findAllReplies() {
-        return replyRepository.findAllReplies();
-    }
 }

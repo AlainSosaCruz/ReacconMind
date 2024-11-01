@@ -12,12 +12,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@Tag(name = "Publications", description = "API for managing user publications")
+
+@Tag(name = "Publication", description = "API for managing user publications")
 @RestController
 @RequestMapping("/publications")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
@@ -26,12 +30,16 @@ public class PublicationController {
     @Autowired
     private PublicationService service;
 
-    @Operation(summary = "Get all publications")
+    @Operation(summary = "Get paginated publications")
     @ApiResponse(responseCode = "200", description = "Found Publications", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Publication.class))) })
     @GetMapping
-    public List<Publication> getAll() {
-        return service.getAll();
+    public ResponseEntity<Page<Publication>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Publication> publications = service.getAll(pageable);
+        return new ResponseEntity<>(publications, HttpStatus.OK);
     }
 
     @Operation(summary = "Get a publication by its ID")
@@ -80,11 +88,5 @@ public class PublicationController {
     @Autowired
     private PublicationRepository publicationRepository;
 
-    @Operation(summary = "Get all publications for DTO")
-    @ApiResponse(responseCode = "200", description = "Found Publications DTO", content = {
-            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PublicationDTO.class))) })
-    @GetMapping("/users")
-    public List<PublicationDTO> getAllPublications() {
-        return publicationRepository.findAllPublications();
-    }
+
 }

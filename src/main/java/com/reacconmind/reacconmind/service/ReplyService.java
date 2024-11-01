@@ -4,6 +4,8 @@ import com.reacconmind.reacconmind.model.Reply;
 import com.reacconmind.reacconmind.repository.ReplyRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,9 +17,9 @@ public class ReplyService {
     @Autowired
     private ReplyRepository repo;
 
-    // Obtener todas las respuestas (replies)
-    public List<Reply> getAllReplies() {
-        return repo.findAll();
+    // Obtener todas las respuestas (replies) con paginación
+    public Page<Reply> getAllReplies(Pageable pageable) {
+        return repo.findAll(pageable);
     }
 
     // Guardar una nueva respuesta (reply)

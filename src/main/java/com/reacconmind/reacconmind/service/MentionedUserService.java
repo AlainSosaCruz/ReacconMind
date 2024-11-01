@@ -4,6 +4,8 @@ import com.reacconmind.reacconmind.model.MentionedUser;
 import com.reacconmind.reacconmind.model.MentionedUserId;
 import com.reacconmind.reacconmind.repository.MentionedUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,11 @@ public class MentionedUserService {
     // Método para obtener todos los usuarios mencionados
     public List<MentionedUser> getAllMentionedUsers() {
         return repository.findAll();
+    }
+
+    // Método para obtener todos los usuarios mencionados con paginación
+    public Page<MentionedUser> getMentionedUsers(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     // Método para obtener un usuario mencionado por su ID de publicación y usuario mencionado

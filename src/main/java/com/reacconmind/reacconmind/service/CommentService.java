@@ -3,35 +3,40 @@ package com.reacconmind.reacconmind.service;
 import com.reacconmind.reacconmind.model.Comment;
 import com.reacconmind.reacconmind.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CommentService {
 
     @Autowired
-    private CommentRepository repository;
+    private CommentRepository commentRepository;
 
     // Método para obtener todos los comentarios
     public List<Comment> getAllComments() {
-        return repository.findAll();
+        return commentRepository.findAll();
+    }
+
+    // Método para obtener comentarios con paginación
+    public Page<Comment> getAllComments(Pageable pageable) {
+        return commentRepository.findAll(pageable);
     }
 
     // Método para obtener un comentario por su ID
     public Comment getCommentById(Integer id) {
-        Optional<Comment> optionalComment = repository.findById(id);
-        return optionalComment.orElse(null); // Retorna null si no se encuentra el comentario
+        return commentRepository.findById(id).orElse(null);
     }
 
-    // Método para guardar un nuevo comentario o actualizar uno existente
-    public void saveComment(Comment comment) {
-        repository.save(comment);
+    // Método para guardar o actualizar un comentario
+    public Comment saveComment(Comment comment) {
+        return commentRepository.save(comment);
     }
 
-    // Método para eliminar un comentario por su ID
+    // Método para eliminar un comentario
     public void deleteComment(Integer id) {
-        repository.deleteById(id);
+        commentRepository.deleteById(id);
     }
 }
