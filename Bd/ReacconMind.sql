@@ -19,7 +19,7 @@ CREATE TABLE User (
 CREATE TABLE ThemePreference (
     idThemePreference INT PRIMARY KEY AUTO_INCREMENT,
     themeBot ENUM('Sports', 'Technology', 'News', 'Music', 'Movies', 'CombinatedMedia') NOT NULL DEFAULT 'CombinatedMedia',
-    idUser INT UNIQUE,
+    idUser INT,
     FOREIGN KEY (idUser) REFERENCES User(idUser)
 );	
 
