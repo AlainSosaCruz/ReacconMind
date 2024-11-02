@@ -2,14 +2,14 @@ package com.reacconmind.reacconmind.model;
 
 
 public class ModerationResult {
-    private ModerationTypeEnum decision;
+    private ModerationType decision;
     private String details;
 
-    public ModerationTypeEnum getDecision() {
+    public ModerationType getDecision() {
         return decision;
     }
 
-    public void setDecision(ModerationTypeEnum decision) {
+    public void setDecision(ModerationType decision) {
         this.decision = decision;
     }
 
