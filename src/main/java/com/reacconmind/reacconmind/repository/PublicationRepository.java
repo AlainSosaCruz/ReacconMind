@@ -2,6 +2,8 @@ package com.reacconmind.reacconmind.repository;
 
 import com.reacconmind.reacconmind.dto.PublicationDTO;
 import com.reacconmind.reacconmind.model.Publication;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,7 +18,8 @@ public interface PublicationRepository extends JpaRepository<Publication, Intege
             "FROM Publication p " +
             "JOIN p.user u " +
             "JOIN p.bot b")
-    List<PublicationDTO> findAllPublications();
+    Page<PublicationDTO> findAllPublications(Pageable pageable);
 }
+
 
 

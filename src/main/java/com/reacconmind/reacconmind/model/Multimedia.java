@@ -24,7 +24,7 @@ public class Multimedia {
     @Column(nullable = false)
     private MultimediaType type;
 
-    // Constructor que inicializa los atributos correctamente
+
     public Multimedia(String url, MultimediaType multimediaType) {
         this.url = url;
         this.type = multimediaType;

@@ -5,6 +5,7 @@ import com.reacconmind.reacconmind.model.Reply;
 import com.reacconmind.reacconmind.repository.ReplyRepository;
 import com.reacconmind.reacconmind.service.ReplyService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,17 +34,7 @@ public class ReplyController {
     @Autowired
     private ReplyRepository replyRepository;
 
-    @Operation(summary = "Get all replies with pagination")
-    @ApiResponse(responseCode = "200", description = "Found Replies", content = {
-            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Reply.class))) })
-    @GetMapping
-    public ResponseEntity<Page<Reply>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Reply> repliesPage = service.getAllReplies(pageable);
-        return new ResponseEntity<>(repliesPage, HttpStatus.OK);
-    }
+
 
     @Operation(summary = "Get a reply by its ID")
     @ApiResponses(value = {
@@ -89,4 +80,27 @@ public class ReplyController {
     }
 
 
+    @Operation(summary = "Get replies with pagination", description = "Retrieve a paginated list of replies. Specify the page number and page size to get a subset of replies.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful retrieval of replies", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ReplyDTO.class)))
+            }),
+            @ApiResponse(responseCode = "400", description = "Invalid page number or page size provided"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("")
+    public ResponseEntity<List<ReplyDTO>> getAllReplies(
+            @Parameter(description = "The page number to retrieve. Default is 0 (first page).", required = false, example = "1")
+            @RequestParam(value = "page", defaultValue = "0") int page,
+
+            @Parameter(description = "The number of replies per page. Default is 10.", required = false, example = "10")
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ReplyDTO> replyPage = replyRepository.findAllReplies(pageable);
+
+        // Retornar solo el contenido de los ReplyDTO
+        return ResponseEntity.ok(replyPage.getContent());
+
+}
 }

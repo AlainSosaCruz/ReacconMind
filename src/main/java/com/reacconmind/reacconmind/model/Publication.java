@@ -37,6 +37,19 @@ public class Publication {
     @Column(length = 250)
     private String content;
 
+
+    public Publication(Integer idPublication, User user, Bot bot, List<PublicationHashtag> publicationHashtags, String content) {
+        this.idPublication = idPublication;
+        this.user = user;
+        this.bot = bot;
+        this.publicationHashtags = publicationHashtags;
+        this.content = content;
+    }
+
+
+    public Publication() {
+    }
+
     // Getters y Setters
     public Integer getIdPublication() { // Cambiado a Integer
         return idPublication;

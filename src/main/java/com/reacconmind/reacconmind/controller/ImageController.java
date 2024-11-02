@@ -1,4 +1,4 @@
-/* package com.reacconmind.reacconmind.controller;
+package com.reacconmind.reacconmind.controller;
 
 import com.reacconmind.reacconmind.dto.ImageDTO;
 import com.reacconmind.reacconmind.model.Image;
@@ -11,6 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 
 
-@Tag(name = "Images", description = "API for managing images, including upload, retrieval, update, and deletion.")
+@Tag(name = "Image", description = "API for managing images, including upload, retrieval, update, and deletion.")
 @RestController
 @RequestMapping("/image")
 public class ImageController {
@@ -159,11 +162,17 @@ public class ImageController {
         }
     }
 
-    @Operation(summary = "Get all images for user", description = "Retrieve all images in DTO format")
+    @Operation(summary = "Get images for pagination", description = "Retrieve all images in DTO format")
     @ApiResponse(responseCode = "200", description = "Images retrieved successfully", content = @Content(schema = @Schema(implementation = ImageDTO.class)))
     @GetMapping("")
-    public List<ImageDTO> findAllImages() {
-        return imageRepository.findAllImages();
+    public ResponseEntity<List<ImageDTO>> findAllImages(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ImageDTO> imagePage = imageRepository.findAllImages(pageable);
+
+        // Retornar solo el contenido de las imágenes
+        return ResponseEntity.ok(imagePage.getContent());
     }
 }
- */

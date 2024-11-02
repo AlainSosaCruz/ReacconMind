@@ -1,5 +1,6 @@
 package com.reacconmind.reacconmind.dto;
 
+import com.reacconmind.reacconmind.model.Publication;
 import com.reacconmind.reacconmind.model.ThemeBotType;
 
 public class PublicationDTO {
@@ -19,6 +20,9 @@ public class PublicationDTO {
         this.botName = botName;
         this.botTheme = botTheme;
         this.content = content;
+    }
+
+    public PublicationDTO(Publication publication) {
     }
 
     public int getIdPublication() {

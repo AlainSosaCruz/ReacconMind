@@ -2,6 +2,8 @@ package com.reacconmind.reacconmind.repository;
 
 import com.reacconmind.reacconmind.dto.ImageDTO;
 import com.reacconmind.reacconmind.model.Image;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,5 +18,5 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
             "FROM Image i " +
             "JOIN i.publication p " +
             "JOIN p.user u")
-    List<ImageDTO> findAllImages();
+    Page<ImageDTO> findAllImages(Pageable pageable);
 }

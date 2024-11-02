@@ -5,6 +5,7 @@ import com.reacconmind.reacconmind.model.Comment;
 import com.reacconmind.reacconmind.repository.CommentRepository;
 import com.reacconmind.reacconmind.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Comment", description = "Operations related to comments in the application.")
 @RestController
 @RequestMapping("/comments")
@@ -31,17 +34,17 @@ public class CommentController {
     @Autowired
     private CommentRepository commentRepository;
 
-    @Operation(summary = "Get paginated comments")
-    @ApiResponse(responseCode = "200", description = "Found Comments", content = {
-            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Comment.class)))})
-    @GetMapping
-    public ResponseEntity<Page<Comment>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Comment> comments = service.getAllComments(pageable);
-        return new ResponseEntity<>(comments, HttpStatus.OK);
-    }
+//    @Operation(summary = "Get paginated comments")
+//    @ApiResponse(responseCode = "200", description = "Found Comments", content = {
+//            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Comment.class)))})
+//    @GetMapping
+//    public ResponseEntity<Page<Comment>> getAll(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<Comment> comments = service.getAllComments(pageable);
+//        return new ResponseEntity<>(comments, HttpStatus.OK);
+//    }
 
     @Operation(summary = "Get a comment by its ID")
     @ApiResponses(value = {
@@ -97,7 +100,26 @@ public class CommentController {
             return new ResponseEntity<>("Comment not found", HttpStatus.NOT_FOUND);
         }
     }
+    @Operation(summary = "Get comments with pagination")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found comments", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentDTO.class)))
+            }),
+            @ApiResponse(responseCode = "400", description = "Invalid page number or size"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("")
+    public ResponseEntity<List<CommentDTO>> findAllComments(
+            @Parameter(description = "The page number to retrieve. Default is 0.", required = false, example = "0")
+            @RequestParam(value = "page", defaultValue = "0") int page,
 
+            @Parameter(description = "The number of comments per page. Default is 10.", required = false, example = "10")
+            @RequestParam(value = "size", defaultValue = "10") int size) {
 
+        Pageable pageable = PageRequest.of(page, size);
+        Page<CommentDTO> commentPage = commentRepository.findAllComments(pageable);
 
+        // Retornar solo el contenido de los comentarios
+        return ResponseEntity.ok(commentPage.getContent());
+    }
 }

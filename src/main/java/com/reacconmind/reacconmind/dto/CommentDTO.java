@@ -18,6 +18,9 @@ public class CommentDTO {
         this.contentComment = contentComment;
     }
 
+    public CommentDTO() {
+    }
+
     public int getIdComment() {
         return idComment;
     }
