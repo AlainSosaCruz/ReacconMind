@@ -36,7 +36,7 @@ public class DataInitializer implements CommandLineRunner {
         createUserIfNotExists("User One", "https://example.com/image1.jpg",
                 "https://example.com/facade1.jpg", "Biography of User One",
                 "userone", "https://example.com/thumbnail1.jpg",
-                "user1@example.com", "aascsosa12");
+                "user1@example.com", "userOne");
 
         createUserIfNotExists("User Two", "https://example.com/image2.jpg",
                 "https://example.com/facade2.jpg", "Biography of User Two",

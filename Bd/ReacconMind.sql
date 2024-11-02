@@ -11,7 +11,7 @@ CREATE TABLE User (
     biography VARCHAR(50) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     thumbnail VARCHAR(2083),
-    dateCreationProfile TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dateCreationProfile TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     status ENUM ('Active','Inactive') DEFAULT 'Active'
 );
 
@@ -214,3 +214,82 @@ CREATE TABLE PasswordResetToken (
     FOREIGN KEY (idGoogleAuth) REFERENCES GoogleAuth(idGoogleAuth) ON DELETE CASCADE,
     CHECK ((idAccountUserEmail IS NOT NULL AND idGoogleAuth IS NULL) OR (idAccountUserEmail IS NULL AND idGoogleAuth IS NOT NULL))
 );
+
+
+-- Datos de ejemplo para ThemePreference
+INSERT INTO ThemePreference (themeBot, idUser) VALUES ('Sports', 1);
+INSERT INTO ThemePreference (themeBot, idUser) VALUES ('Music', 2);
+
+-- Datos de ejemplo para Multimedia
+INSERT INTO Multimedia (url, type) VALUES ('https://example.com/image1.jpg', 'Image');
+INSERT INTO Multimedia (url, type) VALUES ('https://example.com/video1.mp4', 'Video');
+
+-- Datos de ejemplo para Message
+INSERT INTO Message (idSender, idAddressee, content) VALUES (1, 2, 'Hello, User 2!');
+INSERT INTO Message (idSender, idAddressee, content) VALUES (2, 1, 'Hi, User 1!');
+
+-- Datos de ejemplo para Bot
+INSERT INTO Bot (name, theme, idMultimedia) VALUES ('BotSports', 'Sports', 1);
+INSERT INTO Bot (name, theme, idMultimedia) VALUES ('BotMusic', 'Music', 2);
+
+-- Datos de ejemplo para Publication
+INSERT INTO Publication (idUser, content) VALUES (1, 'User 1 post content');
+INSERT INTO Publication (idBot, content) VALUES (1, 'BotSports post content');
+
+-- Datos de ejemplo para Follower
+INSERT INTO Follower (idUserFollower, idFollowing, followingType) VALUES (1, 2, 'User');
+INSERT INTO Follower (idUserFollower, idFollowing, followingType) VALUES (2, 1, 'User');
+INSERT INTO Follower (idUserFollower, idFollowing, followingType) VALUES (1, 1, 'Bot');
+
+-- Datos de ejemplo para Image
+INSERT INTO Image (url, thumbnail, idPublication) VALUES ('https://example.com/img1.jpg', 'https://example.com/thumb1.jpg', 1);
+INSERT INTO Image (url, thumbnail, idPublication) VALUES ('https://example.com/img2.jpg', 'https://example.com/thumb2.jpg', 2);
+
+-- Datos de ejemplo para Hashtag
+INSERT INTO Hashtag (name) VALUES ('#Sports');
+INSERT INTO Hashtag (name) VALUES ('#Music');
+
+-- Datos de ejemplo para PublicationHashtag
+INSERT INTO PublicationHashtag (idPublication, idHashtag) VALUES (1, 1);
+INSERT INTO PublicationHashtag (idPublication, idHashtag) VALUES (2, 2);
+
+-- Datos de ejemplo para Tendency
+INSERT INTO Tendency (name) VALUES ('Trending Sports');
+INSERT INTO Tendency (name) VALUES ('Trending Music');
+
+-- Datos de ejemplo para TendencyHashtag
+INSERT INTO TendencyHashtag (idTendency, idHashtag) VALUES (1, 1);
+INSERT INTO TendencyHashtag (idTendency, idHashtag) VALUES (2, 2);
+
+-- Datos de ejemplo para ModerationType
+INSERT INTO ModerationType (name) VALUES ('Spam');
+INSERT INTO ModerationType (name) VALUES ('Inappropriate Content');
+
+-- Datos de ejemplo para Moderation
+INSERT INTO Moderation (idUser, idPublication, idModerationType) VALUES (1, 1, 1);
+INSERT INTO Moderation (idUser, idPublication, idModerationType) VALUES (2, 2, 2);
+
+-- Datos de ejemplo para Notification
+INSERT INTO Notification (idUser, typeNotification, content, state) VALUES (1, 'Follow', 'User 2 followed you', 'Unread');
+INSERT INTO Notification (idUser, typeNotification, content, state) VALUES (2, 'Message', 'You received a message', 'Read');
+
+-- Datos de ejemplo para Comment
+INSERT INTO Comment (idUser, idPublication, contentComment) VALUES (1, 1, 'Great post!');
+INSERT INTO Comment (idUser, idPublication, contentComment) VALUES (2, 2, 'Nice bot content');
+
+-- Datos de ejemplo para Reply
+INSERT INTO Reply (idUser, idComment, contentReply) VALUES (2, 1, 'Thanks!');
+INSERT INTO Reply (idUser, idComment, contentReply) VALUES (1, 2, 'Glad you liked it');
+
+-- Datos de ejemplo para Reaction
+INSERT INTO Reaction (idUser, idPublication, liked) VALUES (1, 1, true);
+INSERT INTO Reaction (idUser, idPublication, liked) VALUES (2, 2, false);
+
+-- Datos de ejemplo para MentionedUser
+INSERT INTO MentionedUser (idPublication, idMentionedUser) VALUES (1, 2);
+INSERT INTO MentionedUser (idPublication, idMentionedUser) VALUES (2, 1);
+
+-- Datos de ejemplo para PasswordResetToken
+INSERT INTO PasswordResetToken (idAccountUserEmail, token) VALUES (1, 'token1');
+
+

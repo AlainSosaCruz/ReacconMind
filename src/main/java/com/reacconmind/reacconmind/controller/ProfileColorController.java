@@ -86,21 +86,6 @@ public class ProfileColorController {
         return new ResponseEntity<>(profileColorDTO, HttpStatus.OK);
     }
 
-    @Operation(summary = "Retrieve all profile colors for a user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Profile colors retrieved successfully"),
-            @ApiResponse(responseCode = "204", description = "No profile colors found for this user")
-    })
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ProfileColor>> getProfileColorsByUserId(
-            @Parameter(description = "User ID to retrieve profile colors", required = true) @PathVariable Integer userId) {
-        List<ProfileColor> profileColors = profileColorService.findByUserId(userId);
-        if (profileColors.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(profileColors, HttpStatus.OK);
-    }
-
     @Operation(summary = "Update a profile color")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Profile color updated successfully"),

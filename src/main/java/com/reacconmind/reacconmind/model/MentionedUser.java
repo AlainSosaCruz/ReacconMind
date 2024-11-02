@@ -12,7 +12,7 @@ import jakarta.persistence.IdClass;
 
 @Entity
 @Table(
-        name = "mentionedUser",
+        name = "MentionedUser",
         uniqueConstraints = @UniqueConstraint(columnNames = {"idPublication", "idMentionedUser"}) // Asegura unicidad
 )
 @IdClass(MentionedUserId.class) // Usar la clase de ID compuesta
