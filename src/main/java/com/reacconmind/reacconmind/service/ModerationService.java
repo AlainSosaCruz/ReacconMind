@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.reacconmind.reacconmind.model.Moderation;
-import com.reacconmind.reacconmind.model.ModerationTypeEnum;
+import com.reacconmind.reacconmind.model.ModerationType;
 import com.reacconmind.reacconmind.model.Notification;
 import com.reacconmind.reacconmind.model.NotificationStatus;
+import com.reacconmind.reacconmind.model.Publication;
 import com.reacconmind.reacconmind.model.TypeNotification;
 import com.reacconmind.reacconmind.model.User;
+import com.reacconmind.reacconmind.model.ModerationPK;
 import com.reacconmind.reacconmind.repository.ModerationRepository;
 
 import java.util.List;
@@ -33,29 +35,33 @@ public class ModerationService {
         return moderationRepository.findAll();
     }
 
-    public List<Moderation> getModerationsByPublication(int publicationId) {
-        return moderationRepository.findByIdPublication(publicationId);
+    public List<Moderation> getModerationsByPublication(Publication publication) {
+        return moderationRepository.findByIdPublication(publication);
     }
 
-    public List<Moderation> getModerationsByUser(int userId) {
-        return moderationRepository.findByIdUsuario(userId);
+    public List<Moderation> getModerationsByUser(User user) {
+        return moderationRepository.findByIdUser(user);
     }
 
-    public Optional<Moderation> getModerationById(int id) {
+    public Optional<Moderation> getModerationById(ModerationPK id) {
         return moderationRepository.findById(id);
     }
     
     public Moderation moderateText(int publicationId, String content, int userId) {
-        ModerationTypeEnum decision = azureModerationService.moderateText(content);
+        ModerationType decision = azureModerationService.moderateText(content);
         
         Moderation moderation = new Moderation();
-        moderation.setIdPublication(publicationId);
-        moderation.setIdUser(userId);
-        moderation.setModerationType(decision);
+        ModerationPK moderationPK = new ModerationPK();
         
+        moderationPK.setIdUser(userId);
+        moderationPK.setIdPublication(publicationId);
+        moderationPK.setIdModerationType(decision.name());
+        
+        moderation.setId(moderationPK);
+        moderation.setModerationType(decision);
         moderation = moderationRepository.save(moderation);
 
-        if (decision == ModerationTypeEnum.REJECTED) {
+        if (decision == ModerationType.REJECTED) {
             sendRejectionNotification(userId, publicationId);
         }
         
@@ -63,16 +69,20 @@ public class ModerationService {
     }
 
     public Moderation moderateImage(int publicationId, MultipartFile image, int userId) {
-        ModerationTypeEnum decision = azureModerationService.moderateImage(image);
+        ModerationType decision = azureModerationService.moderateImage(image);
         
         Moderation moderation = new Moderation();
-        moderation.setIdPublication(publicationId);
-        moderation.setIdUser(userId);
-        moderation.setModerationType(decision);
+        ModerationPK moderationPK = new ModerationPK();
         
+        moderationPK.setIdUser(userId);
+        moderationPK.setIdPublication(publicationId);
+        moderationPK.setIdModerationType(decision.name());
+        
+        moderation.setId(moderationPK);
+        moderation.setModerationType(decision);
         moderation = moderationRepository.save(moderation);
 
-        if (decision == ModerationTypeEnum.REJECTED) {
+        if (decision == ModerationType.REJECTED) {
             sendRejectionNotification(userId, publicationId);
         }
         
@@ -82,7 +92,7 @@ public class ModerationService {
     private void sendRejectionNotification(int userId, int publicationId) {
         Notification notification = new Notification();
         User user = new User();
-        user.setIdUser(userId); // Cambiado a setIdUser basado en el modelo User proporcionado
+        user.setIdUser(userId);
         notification.setIdUser(user);
         notification.setTypeNotification(TypeNotification.Message);
         notification.setContent("Tu publicación #" + publicationId + " ha sido rechazada por incumplir las normas de la comunidad.");
@@ -90,6 +100,7 @@ public class ModerationService {
         
         notificationService.sendNotification(notification);
     }
+
     public Page<Moderation> getAllModerations(Pageable pageable) {
         return moderationRepository.findAll(pageable);
     }

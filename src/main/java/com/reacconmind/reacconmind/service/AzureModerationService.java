@@ -2,7 +2,7 @@ package com.reacconmind.reacconmind.service;
 
 import com.reacconmind.reacconmind.configuration.AzureConfig;
 import com.reacconmind.reacconmind.model.ModerationResult;
-import com.reacconmind.reacconmind.model.ModerationTypeEnum;
+import com.reacconmind.reacconmind.model.ModerationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -22,12 +22,12 @@ public class AzureModerationService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public ModerationTypeEnum moderateText(String content) {
+    public ModerationType moderateText(String content) {
         ModerationResult result = moderateContent(content);
         return result.getDecision();
     }
 
-    public ModerationTypeEnum moderateImage(MultipartFile image) {
+    public ModerationType moderateImage(MultipartFile image) {
         try {
             String url = azureConfig.getEndpoint() + "/contentmoderator/moderate/v1.0/ProcessImage/Evaluate";
             
@@ -50,17 +50,17 @@ public class AzureModerationService {
             return processImageModerationResponse(response.getBody());
         } catch (IOException e) {
             e.printStackTrace();
-            return ModerationTypeEnum.PENDING;
+            return ModerationType.PENDING;
         }
     }
 
-    private ModerationTypeEnum processImageModerationResponse(String response) {
+    private ModerationType processImageModerationResponse(String response) {
 
         if (response.contains("\"IsImageAdultClassified\":false") && 
             response.contains("\"IsImageRacyClassified\":false")) {
-            return ModerationTypeEnum.APPROVED;
+            return ModerationType.APPROVED;
         }
-        return ModerationTypeEnum.REJECTED;
+        return ModerationType.REJECTED;
     }
 
     private ModerationResult moderateContent(String content) {
@@ -92,10 +92,10 @@ public class AzureModerationService {
             boolean hasInappropriateContent = body.contains("\"Terms\":[") || 
                                             body.contains("\"Classification\":{\"ReviewRecommended\":true}");
             
-            result.setDecision(hasInappropriateContent ? ModerationTypeEnum.REJECTED : ModerationTypeEnum.APPROVED);
+            result.setDecision(hasInappropriateContent ? ModerationType.REJECTED : ModerationType.APPROVED);
             result.setDetails(body);
         } else {
-            result.setDecision(ModerationTypeEnum.PENDING);
+            result.setDecision(ModerationType.PENDING);
             result.setDetails("Error en la moderación: " + response.getStatusCode());
         }
         
