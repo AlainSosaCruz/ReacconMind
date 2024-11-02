@@ -7,18 +7,24 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "moderation")
 public class Moderation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_moderation")
     private int idModeration;
 
-    @Column(name = "id_usuario", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "id_usuario", nullable = false)
     private int idUsuario;
 
-    @Column(name = "id_publication", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "id_publication", nullable = false)
     private int idPublication;
 
     @Enumerated(EnumType.STRING)

@@ -9,7 +9,7 @@ import com.reacconmind.reacconmind.service.ModerationNotificationStrategy;
 @Configuration
 public class ModerationConfig {
     @Bean
-    public NotificationStrategy moderationNotificationStrategy() {
+    public NotificationStrategy moderationNotificationStrategyS() {
         return new ModerationNotificationStrategy();
     }
 }

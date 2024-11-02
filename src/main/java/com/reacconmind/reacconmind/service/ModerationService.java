@@ -1,5 +1,11 @@
 package com.reacconmind.reacconmind.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.reacconmind.reacconmind.model.Moderation;
 import com.reacconmind.reacconmind.model.ModerationTypeEnum;
 import com.reacconmind.reacconmind.model.Notification;
@@ -7,10 +13,6 @@ import com.reacconmind.reacconmind.model.NotificationStatus;
 import com.reacconmind.reacconmind.model.TypeNotification;
 import com.reacconmind.reacconmind.model.User;
 import com.reacconmind.reacconmind.repository.ModerationRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -87,5 +89,8 @@ public class ModerationService {
         notification.setState(NotificationStatus.Unread);
         
         notificationService.sendNotification(notification);
+    }
+    public Page<Moderation> getAllModerations(Pageable pageable) {
+        return moderationRepository.findAll(pageable);
     }
 }
