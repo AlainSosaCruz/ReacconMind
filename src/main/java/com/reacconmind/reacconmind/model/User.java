@@ -60,7 +60,7 @@ public class User {
     }
 
     public User(String name, String imageProfile, String imageFacade, String thumbnail, String biography,
-            String userName, StatusType status, Date dateCreationProfile) {
+            String userName, StatusType status) {
         this.name = name;
         this.imageProfile = imageProfile;
         this.imageFacade = imageFacade;
@@ -68,7 +68,6 @@ public class User {
         this.biography = biography;
         this.userName = userName;
         this.status = status;
-        this.dateCreationProfile = dateCreationProfile;
     }
 
     public int getIdUser() {

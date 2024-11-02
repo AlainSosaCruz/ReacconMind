@@ -10,27 +10,32 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@Tag(name = "Mentioned")
 @RestController
 @RequestMapping("/mentionedUsers")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
+@Tag(name = "Mentioned Users", description = "Operations related to mentioned user management.")
 public class MentionedUserController {
 
     @Autowired
     private MentionedUserService service;
 
-    @Operation(summary = "Get all mentioned users")
+    @Operation(summary = "Get all mentioned users with pagination")
     @ApiResponse(responseCode = "200", description = "Found Mentioned Users", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = MentionedUser.class))) })
     @GetMapping
-    public List<MentionedUser> getAll() {
-        return service.getAllMentionedUsers();
+    public ResponseEntity<Page<MentionedUser>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MentionedUser> mentionedUsers = service.getMentionedUsers(pageable);
+        return new ResponseEntity<>(mentionedUsers, HttpStatus.OK);
     }
 
     @Operation(summary = "Get a mentioned user by ID")
@@ -39,7 +44,7 @@ public class MentionedUserController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = MentionedUser.class)) }),
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "Mentioned User not found", content = @Content) })
-    @GetMapping("{idPublication}/{idMentionedUser}")
+    @GetMapping("/{idMentionedUser}")
     public ResponseEntity<?> getById(@PathVariable Integer idPublication, @PathVariable Integer idMentionedUser) {
         MentionedUser mentionedUser = service.getMentionedUserById(idPublication, idMentionedUser);
         return mentionedUser != null

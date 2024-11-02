@@ -32,7 +32,7 @@ public class Image {
     @JoinColumn(name = "idPublication", nullable = true)
     private Publication publication;
 
-    // Constructor vacío (requerido por JPA)
+
 
 
     // Getters y Setters

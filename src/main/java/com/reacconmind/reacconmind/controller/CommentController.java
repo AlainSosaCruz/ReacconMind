@@ -12,13 +12,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@Tag(name = "Comment")
+@Tag(name = "Comment", description = "Operations related to comments in the application.")
 @RestController
 @RequestMapping("/comments")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
@@ -30,12 +31,16 @@ public class CommentController {
     @Autowired
     private CommentRepository commentRepository;
 
-    @Operation(summary = "Get all comments")
+    @Operation(summary = "Get paginated comments")
     @ApiResponse(responseCode = "200", description = "Found Comments", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Comment.class)))})
     @GetMapping
-    public List<Comment> getAll() {
-        return service.getAllComments();
+    public ResponseEntity<Page<Comment>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comment> comments = service.getAllComments(pageable);
+        return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
     @Operation(summary = "Get a comment by its ID")
@@ -93,8 +98,6 @@ public class CommentController {
         }
     }
 
-    @GetMapping("/users")
-    public List<CommentDTO> findAllComments() {
-        return commentRepository.findAllComments();
-    }
+
+
 }

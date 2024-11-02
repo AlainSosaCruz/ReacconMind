@@ -3,12 +3,11 @@ package com.reacconmind.reacconmind.service;
 import com.reacconmind.reacconmind.model.Publication;
 import com.reacconmind.reacconmind.repository.PublicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
 import jakarta.transaction.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -17,9 +16,9 @@ public class PublicationService {
     @Autowired
     private PublicationRepository repo;
 
-    // Obtener todas las publicaciones
-    public List<Publication> getAll() {
-        return repo.findAll();
+    // Obtener todas las publicaciones con paginación
+    public Page<Publication> getAll(Pageable pageable) {
+        return repo.findAll(pageable);
     }
 
     // Guardar una nueva publicación
@@ -36,8 +35,4 @@ public class PublicationService {
     public void delete(Integer idPublication) {
         repo.deleteById(idPublication);
     }
-
-
-
-
 }

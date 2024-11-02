@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("followers")
-@Tag(name = "Follower")
+@Tag(name = "Follower", description = "Provides methods for managing followers.")
 public class FollowerController {
     @Autowired
     private FollowerService followerService;
@@ -45,7 +45,7 @@ public class FollowerController {
     @Operation(summary = "Get a list of followings ", description = "A user can stop following a user.")
     @ApiResponse(responseCode = "200", description = "Unfollowed user.", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BotDTO.class))) })
-    @GetMapping("/{userId}/followings")
+    @GetMapping("/getAll-followings/{userId}")
     public ResponseEntity<List<FollowerDTO>> getFollowings(@PathVariable int userId) {
         List<FollowerDTO> followings = followerService.getFollowings(userId);
         return ResponseEntity.ok(followings);
@@ -54,7 +54,7 @@ public class FollowerController {
     @Operation(summary = "Get a list of follower ", description = "A user can stop following a user.")
     @ApiResponse(responseCode = "200", description = "Unfollowed user.", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BotDTO.class))) })
-    @GetMapping("/{userId}/followers")
+    @GetMapping("/followers/{userId}")
     public ResponseEntity<List<FollowerDTO>> getFollowers(@PathVariable int userId) {
         List<FollowerDTO> followers = followerService.getFollowers(userId);
         return ResponseEntity.ok(followers);

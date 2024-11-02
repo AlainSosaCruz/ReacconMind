@@ -14,8 +14,10 @@ import com.reacconmind.reacconmind.repository.BotRepository;
 import com.reacconmind.reacconmind.repository.FollowerRepository;
 import com.reacconmind.reacconmind.repository.UserRepository;
 
-import java.sql.Timestamp;
+import jakarta.transaction.Transactional;
 
+import java.sql.Timestamp;
+@Transactional
 @Service
 public class FollowerService {
     @Autowired
@@ -29,7 +31,7 @@ public class FollowerService {
         FollowerPK followerPK = follower.getIdFollower();
         validateFollowerIds(followerPK);
         validateFollowerExists(followerPK.getIdUserFollower());
-        validateNotFollowingSelf(followerPK);
+        validateNotFollowingSelf(followerPK);   
         validateTargetExists(followerPK, "follow");
 
         followerRepository.save(follower);
@@ -69,7 +71,7 @@ public class FollowerService {
     public List<FollowerDTO> getFollowers(int userId) {
          List<Follower> followers = followerRepository.findFollowersByUserId(userId);
          return followers.stream()
-                 .map(f -> new FollowerDTO(f.getIdFollower().getIdUserFollower()))  //Constructor con solo idUserFollower
+                 .map(f -> new FollowerDTO(f.getIdFollower().getIdUserFollower()))  
                  .collect(Collectors.toList());
     }
     
