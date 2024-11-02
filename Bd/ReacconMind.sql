@@ -1,4 +1,3 @@
-
 CREATE DATABASE reacconMind;
 USE reacconMind;
 -- USE sys;
@@ -12,7 +11,7 @@ CREATE TABLE User (
     biography VARCHAR(50) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     thumbnail VARCHAR(2083),
-    dateCreationProfile TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    dateCreationProfile TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status ENUM ('Active','Inactive') DEFAULT 'Active'
 );
 
@@ -215,7 +214,3 @@ CREATE TABLE PasswordResetToken (
     FOREIGN KEY (idGoogleAuth) REFERENCES GoogleAuth(idGoogleAuth) ON DELETE CASCADE,
     CHECK ((idAccountUserEmail IS NOT NULL AND idGoogleAuth IS NULL) OR (idAccountUserEmail IS NULL AND idGoogleAuth IS NOT NULL))
 );
-
-
-
-

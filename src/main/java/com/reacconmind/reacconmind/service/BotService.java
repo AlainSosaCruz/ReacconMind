@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.reacconmind.reacconmind.dto.BotDTO;
@@ -22,8 +24,10 @@ public class BotService {
     private BotRepository repository;
 
 
-    public List<Bot> getAllBots() {
-        return repository.findAll();
+    public List<Bot> getAllBots(int page, int pageSize) {
+        PageRequest pageReq = PageRequest.of(page, pageSize);
+        Page<Bot> bots = repository.findAll(pageReq); 
+        return bots.getContent();         
     }
 
     public Optional<Bot> getBotById(int idBot) {
@@ -40,7 +44,7 @@ public class BotService {
             Bot bot = existingBot.get();
             bot.setName(updatedBot.getName());
             bot.setTheme(updatedBot.getTheme());
-            bot.setMultimedia(updatedBot.getMultimedia());
+            // bot.setMultimedia(updatedBot.getMultimedia());
             return repository.save(bot);
         }
         return null;
@@ -56,7 +60,7 @@ public class BotService {
         dto.setName(bot.getName());
         dto.setTheme(bot.getTheme());
         dto.setShippingDate(Timestamp.valueOf(LocalDateTime.now())); 
-        dto.setMultimedia(bot.getMultimedia());
+        // dto.setMultimedia(bot.getMultimedia());
         return dto;
     }
 
@@ -65,7 +69,7 @@ public class BotService {
         bot.setIdBot(dto.getIdBot());
         bot.setName(dto.getName());
         bot.setTheme(dto.getTheme());
-        bot.setMultimedia(dto.getMultimedia());
+        // bot.setMultimedia(dto.getMultimedia());
         return bot;
     }
 }

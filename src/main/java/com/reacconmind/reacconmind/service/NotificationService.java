@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.reacconmind.reacconmind.dto.NotificationDTO;
@@ -45,6 +47,15 @@ public class NotificationService {
         strategies.put(TypeNotification.Alert, alertNotificationStrategy);
     }
 
+    public List<NotificationDTO> getAllNotificationsByUserId(Integer userId, int page, int size) {
+        PageRequest pageReq = PageRequest.of(page, size);
+        Page<Notification> notifications = repository.findAllByUserId(userId, pageReq);
+        return notifications.getContent().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    
+
     public List<NotificationDTO> getAll() {
         List<Notification> notifications = repository.findAll();
         return notifications.stream()
@@ -75,20 +86,13 @@ public class NotificationService {
         }
     }
 
-    public List<Notification> getUnreadNotifications(Integer userId) {
-        return repository.findAll().stream()
-                .filter(notification -> {
-                    boolean isUnread = notification.getState() == NotificationStatus.Unread;
-                    boolean isForUser = notification.getIdUser() != null && notification.getIdUser().getIdUser() == userId;
-                    // Esto te ayudará a ver qué filtros están fallando
-                    System.out.println("Notification ID: " + notification.getIdNotification() + 
-                                       " | Unread: " + isUnread + 
-                                       " | For User: " + isForUser + 
-                                       " | User ID in Notification: " + (notification.getIdUser() != null ? notification.getIdUser().getIdUser() : "null"));
-                    return isUnread && isForUser;
-                })
-                .collect(Collectors.toList());
-    }
+    public List<Notification> getUnreadNotifications(Integer userId, int page, int size) {
+    PageRequest pageReq = PageRequest.of(page, size);
+    Page<Notification> notifications = repository.findUnreadNotificationsByUserId(userId, NotificationStatus.Unread, pageReq);
+    return notifications.getContent();
+}
+
+
 
     public void sendNotification(Notification notification) {
         NotificationStrategy strategy = strategies.get(notification.getTypeNotification());
