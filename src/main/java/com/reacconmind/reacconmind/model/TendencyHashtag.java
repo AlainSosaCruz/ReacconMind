@@ -28,10 +28,8 @@ public class TendencyHashtag {
     @JoinColumn(name = "idHashtag", referencedColumnName = "idHashtag", insertable = false, updatable = false)
     private Hashtag hashtag;
 
-    // Constructor vacío
     public TendencyHashtag() {}
 
-    // Constructor con parámetros
     public TendencyHashtag(Tendency tendency, Hashtag hashtag) {
         this.tendency = tendency;
         this.hashtag = hashtag;
@@ -39,7 +37,6 @@ public class TendencyHashtag {
         this.idHashtag = hashtag.getIdHashtag();
     }
 
-    // Getters y setters
     public int getIdTendency() {
         return idTendency;
     }
