@@ -1,8 +1,14 @@
 package com.reacconmind.reacconmind.controller;
 
 import com.reacconmind.reacconmind.dto.CommentDTO;
+import com.reacconmind.reacconmind.model.Bot;
 import com.reacconmind.reacconmind.model.Comment;
+import com.reacconmind.reacconmind.model.Publication;
+import com.reacconmind.reacconmind.model.User;
+import com.reacconmind.reacconmind.repository.BotRepository;
 import com.reacconmind.reacconmind.repository.CommentRepository;
+import com.reacconmind.reacconmind.repository.PublicationRepository;
+import com.reacconmind.reacconmind.repository.UserRepository;
 import com.reacconmind.reacconmind.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Tag(name = "Comment", description = "Operations related to comments in the application.")
 @RestController
@@ -33,58 +40,131 @@ public class CommentController {
 
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-//    @Operation(summary = "Get paginated comments")
-//    @ApiResponse(responseCode = "200", description = "Found Comments", content = {
-//            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Comment.class)))})
-//    @GetMapping
-//    public ResponseEntity<Page<Comment>> getAll(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        Page<Comment> comments = service.getAllComments(pageable);
-//        return new ResponseEntity<>(comments, HttpStatus.OK);
-//    }
+    @Autowired
+    private PublicationRepository publicationRepository;
 
     @Operation(summary = "Get a comment by its ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Comment found", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = Comment.class))}),
-            @ApiResponse(responseCode = "400", description = "Invalid comment ID supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Comment not found", content = @Content)})
-    @GetMapping("{id}")
-    public ResponseEntity<?> getById(@PathVariable Integer id) {
-        Comment comment = service.getCommentById(id);
-        return comment != null
-                ? new ResponseEntity<>(comment, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+    @ApiResponse(responseCode = "200", description = "Comment found", content = @Content)
+    @GetMapping("/comments/{id}")
+    public ResponseEntity<?> getCommentById(@PathVariable int id) {
+        try {
+            // Busca el comentario por su ID
+            Optional<Comment> commentOptional = commentRepository.findById(id);
 
-    @Operation(summary = "Create a new comment")
-    @ApiResponse(responseCode = "201", description = "Comment created", content = {
-            @Content(mediaType = "application/json", schema = @Schema(implementation = Comment.class))})
-    @PostMapping
-    public ResponseEntity<String> create(@RequestBody Comment comment) {
-        service.saveComment(comment);
-        return new ResponseEntity<>("Comment created successfully", HttpStatus.CREATED);
-    }
+            // Verifica si el comentario existe
+            if (commentOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comment not found");
+            }
 
-    @Operation(summary = "Update a comment by its ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Comment updated", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = Comment.class))}),
-            @ApiResponse(responseCode = "404", description = "Comment not found", content = @Content)})
-    @PutMapping("{id}")
-    public ResponseEntity<?> update(@RequestBody Comment updatedComment, @PathVariable Integer id) {
-        Comment existingComment = service.getCommentById(id);
-        if (existingComment != null) {
-            updatedComment.setIdComment(id); // Mantiene el ID del comentario existente
-            service.saveComment(updatedComment);
-            return new ResponseEntity<>("Comment updated successfully", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Comment not found", HttpStatus.NOT_FOUND);
+            // Obtiene el comentario encontrado
+            Comment comment = commentOptional.get();
+
+            // Convierte la entidad Comment a CommentDTO
+            CommentDTO responseDTO = new CommentDTO(
+                    comment.getIdComment(),
+                    comment.getUser().getIdUser(),
+                    comment.getPublication().getIdPublication(),
+                    comment.getContentComment()
+            );
+
+            // Devuelve la respuesta con el DTO
+            return ResponseEntity.ok(responseDTO);
+        } catch (Exception e) {
+            // Captura cualquier error y responde con un mensaje claro
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while processing your request: " + e.getMessage());
         }
     }
+
+
+
+    @Operation(summary = "Create a new comment")
+    @ApiResponse(responseCode = "200", description = "Comment created", content = @Content)
+    @PostMapping
+    public ResponseEntity<?> createComment(@RequestBody CommentDTO commentDTO) {
+
+        Optional<User> userOptional = userRepository.findById(commentDTO.getIdUser());
+        Optional<Publication> publicationOptional = publicationRepository.findById(commentDTO.getIdPublication());
+
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        if (publicationOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Publication not found");
+        }
+
+        User user = userOptional.get();
+        Publication publication = publicationOptional.get();
+        Comment comment = new Comment();
+        comment.setUser(user);
+        comment.setPublication(publication);
+        comment.setContentComment(commentDTO.getContentComment());
+
+        commentRepository.save(comment);
+
+        CommentDTO responseDTO = new CommentDTO(comment.getIdComment(),
+                comment.getUser().getIdUser(),
+                comment.getPublication().getIdPublication(),
+                comment.getContentComment());
+        return ResponseEntity.ok(responseDTO);
+    }
+
+
+    @Operation(summary = "Update an existing comment")
+    @ApiResponse(responseCode = "200", description = "Comment updated successfully", content = @Content)
+    @PutMapping("/comments/{id}")
+    public ResponseEntity<?> updateComment(@PathVariable int id, @RequestBody CommentDTO commentDTO) {
+        // Busca el comentario a actualizar
+        Optional<Comment> commentOptional = commentRepository.findById(id);
+
+        // Verifica si el comentario existe
+        if (commentOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comment not found");
+        }
+
+        // Busca el usuario y la publicación usando los IDs recibidos
+        Optional<User> userOptional = userRepository.findById(commentDTO.getIdUser());
+        Optional<Publication> publicationOptional = publicationRepository.findById(commentDTO.getIdPublication());
+
+        // Verifica si el usuario existe
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        // Verifica si la publicación existe
+        if (publicationOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Publication not found");
+        }
+
+        // Obtiene el comentario, usuario y publicación
+        Comment comment = commentOptional.get();
+        User user = userOptional.get();
+        Publication publication = publicationOptional.get();
+
+        // Actualiza los campos del comentario
+        comment.setUser(user);
+        comment.setPublication(publication);
+        comment.setContentComment(commentDTO.getContentComment());
+
+        // Guarda el comentario actualizado en la base de datos
+        commentRepository.save(comment);
+
+        // Convierte la entidad Comment a CommentDTO para la respuesta
+        CommentDTO responseDTO = new CommentDTO(
+                comment.getIdComment(),
+                comment.getUser().getIdUser(),
+                comment.getPublication().getIdPublication(),
+                comment.getContentComment()
+        );
+
+        // Responde con el DTO del comentario actualizado
+        return ResponseEntity.ok(responseDTO);
+    }
+
 
     @Operation(summary = "Delete a comment by its ID")
     @ApiResponses(value = {

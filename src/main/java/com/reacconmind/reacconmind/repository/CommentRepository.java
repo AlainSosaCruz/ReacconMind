@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
-    @Query("SELECT new com.reacconmind.reacconmind.dto.CommentDTO(c.idComment, u.userName, p.idPublication, p.content, c.contentComment) " +
+    @Query("SELECT new com.reacconmind.reacconmind.dto.CommentDTO(c.idComment, u.idUser, p.idPublication, c.contentComment) " +
             "FROM Comment c " +
             "JOIN c.user u " +
             "JOIN c.publication p")

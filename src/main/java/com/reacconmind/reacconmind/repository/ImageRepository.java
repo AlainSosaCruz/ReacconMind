@@ -14,9 +14,10 @@ import java.util.List;
 public interface ImageRepository extends JpaRepository<Image, Integer> {
 
     // Consulta personalizada para seleccionar solo los campos necesarios y devolverlos como ImageDTO
-    @Query("SELECT new com.reacconmind.reacconmind.dto.ImageDTO(i.idImage, i.url, p.idPublication, u.userName) " +
+    @Query("SELECT new com.reacconmind.reacconmind.dto.ImageDTO(i.idImage, i.url, i.thumbnail, p.idPublication, u.userName) " +
             "FROM Image i " +
             "JOIN i.publication p " +
             "JOIN p.user u")
     Page<ImageDTO> findAllImages(Pageable pageable);
+
 }

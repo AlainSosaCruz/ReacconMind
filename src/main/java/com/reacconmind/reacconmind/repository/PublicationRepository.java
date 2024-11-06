@@ -14,11 +14,12 @@ import java.util.List;
 public interface PublicationRepository extends JpaRepository<Publication, Integer> {
 
     // Consulta personalizada para seleccionar solo los campos necesarios y devolverlos con PublicationDTO
-    @Query("SELECT new com.reacconmind.reacconmind.dto.PublicationDTO(p.idPublication,u.userName, b.name, b.theme, p.content) " +
+    @Query("SELECT new com.reacconmind.reacconmind.dto.PublicationDTO(p.idPublication, u.idUser, b.idBot, p.content) " +
             "FROM Publication p " +
             "JOIN p.user u " +
             "JOIN p.bot b")
     Page<PublicationDTO> findAllPublications(Pageable pageable);
+
 }
 
 

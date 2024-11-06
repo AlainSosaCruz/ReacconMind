@@ -1,8 +1,12 @@
 package com.reacconmind.reacconmind.controller;
 
 import com.reacconmind.reacconmind.dto.ReplyDTO;
+import com.reacconmind.reacconmind.model.Comment;
 import com.reacconmind.reacconmind.model.Reply;
+import com.reacconmind.reacconmind.model.User;
+import com.reacconmind.reacconmind.repository.CommentRepository;
 import com.reacconmind.reacconmind.repository.ReplyRepository;
+import com.reacconmind.reacconmind.repository.UserRepository;
 import com.reacconmind.reacconmind.service.ReplyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Tag(name = "Reply", description = "Operations related to reply management.")
 @RestController
@@ -34,6 +39,12 @@ public class ReplyController {
     @Autowired
     private ReplyRepository replyRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
+
 
 
     @Operation(summary = "Get a reply by its ID")
@@ -42,32 +53,117 @@ public class ReplyController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = Reply.class)) }),
             @ApiResponse(responseCode = "400", description = "Invalid reply ID supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "Reply not found", content = @Content) })
-    @GetMapping("{id}")
-    public ResponseEntity<?> getById(@PathVariable Integer id) {
-        Reply reply = service.getByIdReply(id);
-        return new ResponseEntity<>(reply, HttpStatus.OK);
+    @GetMapping("/replies/{idReply}")
+    public ResponseEntity<?> getReplyById(@PathVariable int idReply) {
+        // Buscar la respuesta en la base de datos
+        Optional<Reply> replyOptional = replyRepository.findById(idReply);
+
+        if (replyOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reply not found");
+        }
+
+        // Obtener la respuesta
+        Reply reply = replyOptional.get();
+
+        // Crear el DTO con los datos de la respuesta
+        ReplyDTO responseDTO = new ReplyDTO(
+                reply.getIdReply(),
+                reply.getUser().getIdUser(),
+                reply.getComment().getIdComment(),
+                reply.getContentReply()
+        );
+
+        // Devolver el DTO como respuesta
+        return ResponseEntity.ok(responseDTO);
     }
 
     @Operation(summary = "Create a new reply")
     @ApiResponse(responseCode = "200", description = "Reply created", content = @Content)
-    @PostMapping
-    public ResponseEntity<?> create(@RequestBody Reply reply) {
-        service.saveReply(reply);
-        return new ResponseEntity<>("Reply created", HttpStatus.OK);
+    @PostMapping("/replies")
+    public ResponseEntity<?> createReply(@RequestBody ReplyDTO replyDTO) {
+        // Busca el usuario y el comentario usando los IDs recibidos
+        Optional<User> userOptional = userRepository.findById(replyDTO.getIdUser());
+        Optional<Comment> commentOptional = commentRepository.findById(replyDTO.getIdComment());
+
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        if (commentOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comment not found");
+        }
+
+        // Crea la nueva respuesta
+        User user = userOptional.get();
+        Comment comment = commentOptional.get();
+        Reply reply = new Reply();
+        reply.setUser(user);
+        reply.setComment(comment);
+        reply.setContentReply(replyDTO.getContentReply());
+
+        // Guarda la respuesta en la base de datos
+        replyRepository.save(reply);
+
+        // Crear el DTO con solo los campos necesarios
+        ReplyDTO responseDTO = new ReplyDTO(
+                reply.getIdReply(),
+                reply.getUser().getIdUser(),
+                reply.getComment().getIdComment(),
+                reply.getContentReply()
+        );
+
+        // Devolver el DTO con la estructura deseada
+        return ResponseEntity.ok(responseDTO);
     }
 
-    @Operation(summary = "Update an existing reply")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Reply updated", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Invalid reply ID supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Reply not found", content = @Content) })
-    @PutMapping("{id}")
-    public ResponseEntity<?> update(@RequestBody Reply reply, @PathVariable Integer id) {
-        Reply existingReply = service.getByIdReply(id);
-        reply.setIdReply(existingReply.getIdReply());
-        service.saveReply(reply);
-        return new ResponseEntity<>("Reply updated", HttpStatus.OK);
+    @Operation(summary = "Update a reply")
+    @ApiResponse(responseCode = "200", description = "Reply updated", content = @Content)
+    @PutMapping("/replies/{idReply}")
+    public ResponseEntity<?> updateReply(@PathVariable int idReply, @RequestBody ReplyDTO replyDTO) {
+        // Busca la respuesta a actualizar
+        Optional<Reply> replyOptional = replyRepository.findById(idReply);
+
+        if (replyOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reply not found");
+        }
+
+        // Busca el usuario y el comentario usando los IDs recibidos en el DTO
+        Optional<User> userOptional = userRepository.findById(replyDTO.getIdUser());
+        Optional<Comment> commentOptional = commentRepository.findById(replyDTO.getIdComment());
+
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        if (commentOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comment not found");
+        }
+
+        // Actualiza los datos de la respuesta
+        Reply reply = replyOptional.get();
+        User user = userOptional.get();
+        Comment comment = commentOptional.get();
+
+        // Actualiza solo los campos necesarios
+        reply.setUser(user);
+        reply.setComment(comment);
+        reply.setContentReply(replyDTO.getContentReply());
+
+        // Guarda la respuesta actualizada
+        replyRepository.save(reply);
+
+        // Crear el DTO con los datos actualizados
+        ReplyDTO responseDTO = new ReplyDTO(
+                reply.getIdReply(),
+                reply.getUser().getIdUser(),
+                reply.getComment().getIdComment(),
+                reply.getContentReply()
+        );
+
+        // Devolver el DTO actualizado
+        return ResponseEntity.ok(responseDTO);
     }
+
 
     @Operation(summary = "Delete a reply by its ID")
     @ApiResponses(value = {

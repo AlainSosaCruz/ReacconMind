@@ -2,33 +2,43 @@ package com.reacconmind.reacconmind.dto;
 
 public class ReactionDTO {
 
+    private int idUser;
+    private int idPublication;
+    private boolean liked;
 
-        private String userName;
-        private String imageProfile;
 
-        public ReactionDTO() {
-        }
+    // Constructor
+    public ReactionDTO(int idUser, int idPublication, boolean liked) {
+        this.idUser = idUser;
+        this.idPublication = idPublication;
+        this.liked = liked;
 
-        public ReactionDTO(String userName, String imageProfile) {
-            this.userName = userName;
-            this.imageProfile = imageProfile;
-        }
+    }
 
-        public String getUserName() {
-            return userName;
-        }
+    // Getters y Setters
+    public int getIdUser() {
+        return idUser;
+    }
 
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
+    }
 
-        public String getImageProfile() {
-            return imageProfile;
-        }
+    public int getIdPublication() {
+        return idPublication;
+    }
 
-        public void setImageProfile(String imageProfile) {
-            this.imageProfile = imageProfile;
-        }
+    public void setIdPublication(int idPublication) {
+        this.idPublication = idPublication;
+    }
+
+    public boolean isLiked() {
+        return liked;
+    }
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
+    }
 
 
 }

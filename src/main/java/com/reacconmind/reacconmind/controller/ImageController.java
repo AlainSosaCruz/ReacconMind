@@ -2,7 +2,9 @@ package com.reacconmind.reacconmind.controller;
 
 import com.reacconmind.reacconmind.dto.ImageDTO;
 import com.reacconmind.reacconmind.model.Image;
+import com.reacconmind.reacconmind.model.Publication;
 import com.reacconmind.reacconmind.repository.ImageRepository;
+import com.reacconmind.reacconmind.repository.PublicationRepository;
 import com.reacconmind.reacconmind.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,19 +37,39 @@ public class ImageController {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private PublicationRepository publicationRepository;
+
     @Operation(summary = "Upload an image file", description = "Upload an image file to Firebase and receive the image URL")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Image uploaded successfully", content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "500", description = "Image upload failed")
     })
     @PostMapping(value = "/upload-image", consumes = { "multipart/form-data" })
-    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Map<String, String>> uploadImage(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "thumbnail", required = false) String thumbnail,
+            @RequestParam(value = "publicationId", required = false) Integer publicationId) {
+
         try {
             // Subir la imagen y obtener la URL
             String url = imageService.upload(file);
+
+            // Crear nueva instancia de Image
             Image image = new Image();
             image.setUrl(url);
+            image.setThumbnail(thumbnail);
+
+            // Asociar la publicación si se proporciona publicationId
+            if (publicationId != null) {
+                Optional<Publication> publication = publicationRepository.findById(publicationId);
+                publication.ifPresent(image::setPublication);
+            }
+
+            // Guardar la imagen en la base de datos
             imageRepository.save(image);
+
+            // Respuesta con la URL de la imagen
             Map<String, String> response = new HashMap<>();
             response.put("url", url);
 
@@ -57,6 +79,7 @@ public class ImageController {
             return ResponseEntity.status(500).body(Map.of("error", "Image upload failed"));
         }
     }
+
 
     //@Operation(summary = "Get all images", description = "Retrieve all images from the database")
     //@ApiResponses(value = {

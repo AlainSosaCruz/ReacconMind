@@ -19,9 +19,10 @@ public interface ReactionRepository extends JpaRepository<Reaction, ReactionPK> 
 
 
 
-    @Query("SELECT new com.reacconmind.reacconmind.dto.ReactionDTO(u.userName, u.imageProfile) " +
+    @Query("SELECT new com.reacconmind.reacconmind.dto.ReactionDTO(u.idUser, p.idPublication, r.liked) " +
             "FROM Reaction r " +
-            "JOIN r.user u")
+            "JOIN r.user u " +
+            "JOIN r.publication p")
     Page<ReactionDTO> findAllReactions(Pageable pageable);
 
 

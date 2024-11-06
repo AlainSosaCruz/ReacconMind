@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 
+
     // Consulta personalizada para seleccionar solo los campos necesarios y devolverlos como ReplyDTO
-    @Query("SELECT new com.reacconmind.reacconmind.dto.ReplyDTO(r.idReply, u.idUser, u.userName, c.idComment, p.idPublication, p.content, c.contentComment, r.contentReply) " +
+    @Query("SELECT new com.reacconmind.reacconmind.dto.ReplyDTO(r.idReply, u.idUser, c.idComment, r.contentReply) " +
             "FROM Reply r " +
             "JOIN r.user u " +
-            "JOIN r.comment c " +
-            "JOIN c.publication p")
+            "JOIN r.comment c")
     Page<ReplyDTO> findAllReplies(Pageable pageable);
 }

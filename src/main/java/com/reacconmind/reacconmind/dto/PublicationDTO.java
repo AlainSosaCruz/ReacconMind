@@ -1,67 +1,45 @@
 package com.reacconmind.reacconmind.dto;
 
 import com.reacconmind.reacconmind.model.Publication;
-import com.reacconmind.reacconmind.model.ThemeBotType;
+import java.time.LocalDateTime;
 
 public class PublicationDTO {
     private int idPublication;
-
-    private String userName;
-
-    private String botName;
-    private ThemeBotType botTheme;
-
+    private int idUser;
+    private int idBot;
     private String content;
 
 
-    public PublicationDTO(int idPublication, String userName, String botName, ThemeBotType botTheme, String content) {
+    // Constructor para crear el DTO con todos los campos
+    public PublicationDTO(int idPublication, int idUser, int idBot, String content) {
         this.idPublication = idPublication;
-        this.userName = userName;
-        this.botName = botName;
-        this.botTheme = botTheme;
+        this.idUser = idUser;
+        this.idBot = idBot;
         this.content = content;
+
     }
 
+    // Constructor que toma una entidad Publication
     public PublicationDTO(Publication publication) {
+        this.idPublication = publication.getIdPublication();
+        this.idUser = publication.getUser().getIdUser();
+        this.idBot = publication.getBot().getIdBot();
+        this.content = publication.getContent();
+
     }
 
-    public int getIdPublication() {
-        return idPublication;
-    }
+    // Getters y Setters
+    public int getIdPublication() { return idPublication; }
+    public void setIdPublication(int idPublication) { this.idPublication = idPublication; }
 
-    public void setIdPublication(int idPublication) {
-        this.idPublication = idPublication;
-    }
+    public int getIdUser() { return idUser; }
+    public void setIdUser(int idUser) { this.idUser = idUser; }
 
-    public String getUserName() {
-        return userName;
-    }
+    public int getIdBot() { return idBot; }
+    public void setIdBot(int idBot) { this.idBot = idBot; }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
 
-    public String getBotName() {
-        return botName;
-    }
 
-    public void setBotName(String botName) {
-        this.botName = botName;
-    }
-
-    public ThemeBotType getBotTheme() {
-        return botTheme;
-    }
-
-    public void setBotTheme(ThemeBotType botTheme) {
-        this.botTheme = botTheme;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 }

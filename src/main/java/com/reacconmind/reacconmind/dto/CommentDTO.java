@@ -2,19 +2,16 @@ package com.reacconmind.reacconmind.dto;
 
 public class CommentDTO {
     private int idComment;
-    private String userName;
+    private int idUser;
     private int idPublication;
-    private String content;
     private String contentComment;
 
     // Constructor
 
-
-    public CommentDTO(int idComment, String userName, int idPublication, String content, String contentComment) {
+    public CommentDTO(int idComment, int idUser, int idPublication, String contentComment) {
         this.idComment = idComment;
-        this.userName = userName;
+        this.idUser = idUser;
         this.idPublication = idPublication;
-        this.content = content;
         this.contentComment = contentComment;
     }
 
@@ -29,12 +26,12 @@ public class CommentDTO {
         this.idComment = idComment;
     }
 
-    public String getUserName() {
-        return userName;
+    public int getIdUser() {
+        return idUser;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
     }
 
     public int getIdPublication() {
@@ -43,14 +40,6 @@ public class CommentDTO {
 
     public void setIdPublication(int idPublication) {
         this.idPublication = idPublication;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     public String getContentComment() {
