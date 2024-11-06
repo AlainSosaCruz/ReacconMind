@@ -48,14 +48,6 @@ public class TendencyController {
         @Autowired
         private ModelMapper modelMapper;
 
-        @Operation(summary = "Get all Tendencies", description = "Get a list of all the trends recorded.")
-        @ApiResponse(responseCode = "200", description = "Successfully obtained trend list", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Tendency.class))) })
-        @GetMapping
-        public List<Tendency> getAll() {
-                return tendencyService.getAll();
-        }
-
         @Operation(summary = "Get all Tendencies with pagination", description = "Retrieve a paginated list of tendencies. Specify the page number and page size to get a subset of tendencies.")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Successful retrieval of tendencies"),

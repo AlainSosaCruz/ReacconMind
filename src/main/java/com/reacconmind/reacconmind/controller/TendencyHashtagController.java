@@ -49,14 +49,6 @@ public class TendencyHashtagController {
                 return tendencyHashtags;
         }
 
-    @Operation(summary = "Get all tendency hashtags")
-    @ApiResponse(responseCode = "200", description = "Found tendency hashtags", content = {
-            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TendencyHashtag.class))) })
-    @GetMapping
-    public List<TendencyHashtag> getAllTendencyHashtags() {
-        return tendencyHashtagService.getAllTendencyHashtags();
-    }
-
     @Operation(summary = "Save a new tendency hashtag relationship")
     @ApiResponse(responseCode = "201", description = "Tendency hashtag created successfully")
     @PostMapping

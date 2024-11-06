@@ -49,14 +49,6 @@ public class PublicationHashtagController {
                 return publicationHashtags;
         }
 
-    @Operation(summary = "Get all publication hashtags")
-    @ApiResponse(responseCode = "200", description = "Found publication hashtags", content = {
-            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PublicationHashtag.class))) })
-    @GetMapping
-    public List<PublicationHashtag> getAllPublicationHashtags() {
-        return publicationHashtagService.getAllPublicationHashtags();
-    }
-
     @Operation(summary = "Save a new publication hashtag relationship")
     @ApiResponse(responseCode = "201", description = "Publication hashtag created successfully")
     @PostMapping

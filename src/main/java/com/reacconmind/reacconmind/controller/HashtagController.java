@@ -46,14 +46,6 @@ public class HashtagController {
         @Autowired
         private ModelMapper modelMapper;
 
-        @Operation(summary = "Get all Hashtags", description = "Get a List with all Hashtags.")
-        @ApiResponse(responseCode = "200", description = "Hashtag list was get succefully", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Hashtag.class))) })
-        @GetMapping
-        public List<Hashtag> getAll() {
-                return hashtagService.getAll();
-        }
-
         @Operation(summary = "Get all Hashtags with pagination", description = "Retrieve a paginated list of hashtags. Specify the page number and page size to get a subset of hashtags.")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Successful retrieval of hashtags"),
