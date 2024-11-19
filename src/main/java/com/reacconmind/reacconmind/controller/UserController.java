@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.reacconmind.reacconmind.dto.UserAddDTO;
 import com.reacconmind.reacconmind.dto.UserDTO;
 import com.reacconmind.reacconmind.model.StatusType;
 import com.reacconmind.reacconmind.model.User;
@@ -130,8 +131,8 @@ public class UserController {
         })
         @PreAuthorize("permitAll()")
         @PostMapping
-        public ResponseEntity<String> addUser(@RequestBody User user) {
-                userService.save(user);
+        public ResponseEntity<String> addUser(@RequestBody UserAddDTO user) {
+                userService.saveUser(user);
                 return ResponseEntity.ok("User added successfully");
         }
 

@@ -33,9 +33,6 @@ public class GoogleAuthController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private AccountUserEmailService accountUserEmailService;
-
     public GoogleAuthController(
             UserService userService,
             GoogleAuthService googleAuthService) {
@@ -72,9 +69,9 @@ public class GoogleAuthController {
         String biography = "Hi";
         String userName = principal.getAttribute("name") + "2e";
 
-        Optional<AccountUserEmail> existingUser = accountUserEmailService.findUserByEmail(email);
+        Optional<GoogleAuth> existingUser = googleAuthService.findByGoogleId(googleId);
         User user;
-        AccountUserEmail accountUserEmail;
+        GoogleAuth accountUserEmail;
         if (existingUser.isPresent()) {
             accountUserEmail = existingUser.get();
             return new ModelAndView(

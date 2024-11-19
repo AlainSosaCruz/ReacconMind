@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.reacconmind.reacconmind.dto.UserAddDTO;
 import com.reacconmind.reacconmind.model.StatusType;
 import com.reacconmind.reacconmind.model.User;
 import com.reacconmind.reacconmind.repository.UserRepository;
@@ -43,6 +44,12 @@ public class UserService {
     }
 
     public void save(User user) {
+        userRepository.save(user);
+
+    }
+
+    public void saveUser(UserAddDTO userDTO) {
+        User user = convertFromDTO(userDTO);
 
         userRepository.save(user);
 
@@ -83,6 +90,24 @@ public class UserService {
         save(user);
 
         return "Image updated successfully.";
+    }
+
+    private UserAddDTO convertToDTO(User user) {
+        UserAddDTO userDTO = new UserAddDTO();
+        userDTO.setName(user.getName());
+        userDTO.setImageProfile(user.getImageProfile());
+        userDTO.setBiography(user.getBiography());
+        userDTO.setImageFacade(user.getImageFacade());
+        userDTO.setUserName(user.getUserName());
+        return userDTO;
+    }
+
+    private User convertFromDTO(UserAddDTO userDTO) {
+        User user = new User();
+        user.setName(userDTO.getName());
+        user.setBiography(userDTO.getBiography());
+        user.setUserName(userDTO.getUserName());
+        return user;
     }
 
 }
