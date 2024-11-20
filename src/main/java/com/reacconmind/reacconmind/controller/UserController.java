@@ -37,6 +37,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @PreAuthorize("hasRole('USER')")
@@ -48,8 +49,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
                 RequestMethod.PUT,
 })
 @Configuration
-@Tag(name = "User Management", description = "Operations related to user management in ReacconMind, such as retrieving, adding, updating users, and uploading profile images.")
-@OpenAPIDefinition(info = @Info(title = "ReacconMind API", description = "API for user management in the ReacconMind application", version = "1.0"))
+@Tag(name = "User Management", description = "Manage users in the ReacconMind application, including adding, updating, and retrieving users.")
+@OpenAPIDefinition(info = @Info(title = "ReacconMind API", description = "API for user management in ReacconMind", version = "1.0"))
 public class UserController {
 
         @Autowired
@@ -58,46 +59,28 @@ public class UserController {
         @Autowired
         private ModelMapper modelMapper;
 
-        /*
-         * @Operation(summary = "Get all Users", description =
-         * "Get a list of all registered users.")
-         * 
-         * @ApiResponse(responseCode = "200", description =
-         * "List of users obtained successfully", content = {
-         * 
-         * @Content(mediaType = "application/json", array = @ArraySchema(schema
-         * = @Schema(implementation = User.class))),
-         * })
-         * 
-         * @GetMapping
-         * public List<User> getAll() {
-         * return userService.getAll();
-         * }
-         */
-
-        @Operation(summary = "Get all Users with pagination", description = "Retrieve a paginated list of users. Specify the page number and page size to get a subset of users.")
+        @Operation(summary = "Get all Users with pagination", description = "Retrieve a paginated list of users.")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Successful retrieval of users", content = {
+                        @ApiResponse(responseCode = "200", description = "Successfully retrieved users", content = {
                                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserDTO.class)))
                         }),
-                        @ApiResponse(responseCode = "400", description = "Invalid page number or page size provided"),
+                        @ApiResponse(responseCode = "400", description = "Invalid pagination parameters"),
                         @ApiResponse(responseCode = "500", description = "Internal server error")
         })
         @GetMapping(value = "pagination", params = { "page", "pageSize" })
         public List<UserDTO> getAllPaginated(
-                        @Parameter(description = "The page number to retrieve. Default is 0 (first page).", required = false, example = "1") @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-
-                        @Parameter(description = "The number of users per page. Default is 10.", required = false, example = "5") @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+                        @Parameter(description = "Page number to retrieve", example = "1") @RequestParam(value = "page", defaultValue = "0") int page,
+                        @Parameter(description = "Number of users per page", example = "10") @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
 
                 List<User> users = userService.getAll(page, pageSize);
                 return users.stream()
-                                .map(this::convertUserToDto) // Conversión a UserDTO
+                                .map(this::convertUserToDto)
                                 .collect(Collectors.toList());
         }
 
-        @Operation(summary = "Get all active Users", description = "Get a list of all registered active users.")
-        @ApiResponse(responseCode = "200", description = "List of active users obtained successfully", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserDTO.class))),
+        @Operation(summary = "Get all active Users", description = "Retrieve a list of active users.")
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved active users", content = {
+                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserDTO.class)))
         })
         @GetMapping("/usersActive")
         public List<UserDTO> getAllUserActive() {
@@ -107,14 +90,12 @@ public class UserController {
                                 .collect(Collectors.toList());
         }
 
-        @Operation(summary = "Get a user by ID", description = "Get a specific user by their control ID.")
+        @Operation(summary = "Get user by ID", description = "Retrieve user details by ID.")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "User found", content = {
-                                        @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)),
+                        @ApiResponse(responseCode = "200", description = "Successfully retrieved user", content = {
+                                        @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))
                         }),
-                        @ApiResponse(responseCode = "400", description = "Invalid user ID", content = @Content),
-                        @ApiResponse(responseCode = "401", description = "Authentication failure", content = @Content(schema = @Schema(hidden = true))),
-                        @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
+                        @ApiResponse(responseCode = "404", description = "User not found")
         })
         @GetMapping("/{idUser}")
         public ResponseEntity<?> getByIdUser(@PathVariable Integer idUser) {
@@ -122,16 +103,14 @@ public class UserController {
                 return ResponseEntity.ok(user);
         }
 
-        @Operation(summary = "Add a new User", description = "Add a new user to the system.")
+        @Operation(summary = "Add a new User", description = "Create a new user in the system.")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "User added successfully", content = {
-                                        @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
-                        }),
-                        @ApiResponse(responseCode = "400", description = "Invalid user data", content = @Content),
+                        @ApiResponse(responseCode = "200", description = "User successfully created"),
+                        @ApiResponse(responseCode = "400", description = "Invalid input data")
         })
         @PreAuthorize("permitAll()")
         @PostMapping
-        public ResponseEntity<String> addUser(@RequestBody UserAddDTO user) {
+        public ResponseEntity<String> addUser(@Valid @RequestBody UserAddDTO user) {
                 userService.saveUser(user);
                 return ResponseEntity.ok("User added successfully");
         }

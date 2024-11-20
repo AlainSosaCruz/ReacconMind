@@ -29,72 +29,41 @@ public class PasswordResetTokenController {
     @Autowired
     UserService userService;
 
-    @Operation(
-        summary = "Request password reset token",
-        description = "Generates a password reset token for the specified email address. This allows the user to reset their password."
-    )
-    @ApiResponses(
-        value = {
-            @ApiResponse(
-                responseCode = "200",
-                description = "Password reset token created successfully."
-            ),
-            @ApiResponse(
-                responseCode = "400",
-                description = "Invalid email or user not found. Ensure the email is valid and registered."
-            ),
-        }
-    )
+    @Operation(summary = "Request password reset token", description = "Generates a password reset token for the specified email address. This allows the user to reset their password.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password reset token created successfully."),
+            @ApiResponse(responseCode = "400", description = "Invalid email or user not found. Ensure the email is valid and registered."),
+    })
     @PostMapping("/reset-request")
     public ResponseEntity<String> resetPassword(
-        @RequestParam @Email String email
-    ) {
+            @RequestParam @Email String email) {
         String responseMessage = passwordResetService.createPasswordResetToken(
-            email
-        );
+                email);
 
         if ("Request processed".equals(responseMessage)) {
             return ResponseEntity.ok(responseMessage);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                responseMessage
-            );
+                    responseMessage);
         }
     }
 
-    @Operation(
-        summary = "Validate password reset token",
-        description = "Validates the provided password reset token and allows the user to set a new password."
-    )
-    @ApiResponses(
-        value = {
-            @ApiResponse(
-                responseCode = "200",
-                description = "The token is valid and the password has been successfully reset."
-            ),
-            @ApiResponse(
-                responseCode = "400",
-                description = "The token is invalid, has expired, or has already been used."
-            ),
-            @ApiResponse(
-                responseCode = "500",
-                description = "Internal server error while attempting to reset the password."
-            ),
-        }
-    )
+    @Operation(summary = "Validate password reset token", description = "Validates the provided password reset token and allows the user to set a new password.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The token is valid and the password has been successfully reset."),
+            @ApiResponse(responseCode = "400", description = "The token is invalid, has expired, or has already been used."),
+            @ApiResponse(responseCode = "500", description = "Internal server error while attempting to reset the password."),
+    })
     @PostMapping("/reset")
     public ResponseEntity<String> resetPassword(
-        @RequestParam String token,
-        @RequestParam String password
-    ) {
+            @RequestParam String token,
+            @RequestParam String password) {
         boolean result = passwordResetService.validatePasswordResetToken(
-            token,
-            password
-        );
+                token,
+                password);
         return result
-            ? ResponseEntity.ok("The password has been successfully reset")
-            : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                "Unable to reset the password"
-            );
+                ? ResponseEntity.ok("The password has been successfully reset")
+                : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                        "Unable to reset the password");
     }
 }
