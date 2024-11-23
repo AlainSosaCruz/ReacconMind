@@ -20,9 +20,9 @@ import jakarta.persistence.OneToOne;
 @Entity
 public class User {
 
-  @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    
+
     private int idUser;
 
     private String name;
@@ -49,13 +49,12 @@ public class User {
     private List<ThemePreference> themePreferences = new ArrayList<>();
 
     @JsonManagedReference
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "idUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private AccountUserEmail accountUserEmail;
 
     @JsonManagedReference
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private GoogleAuth accountUserGoogle;
-
 
     public User() {
     }

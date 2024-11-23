@@ -8,8 +8,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table (name="AccountUserEmail")
 public class AccountUserEmail {
 
     @Id
@@ -20,17 +22,17 @@ public class AccountUserEmail {
     private String password;
 
     @OneToOne
-    @JoinColumn(name = "idUser", unique = true)
+    @JoinColumn(name = "idUser", unique = true, referencedColumnName = "idUser")
     @JsonBackReference
-    private User user;
+    private User idUser;
 
-    public AccountUserEmail() {
-    }
-
-    public AccountUserEmail( String email, String password, User user) {
+    public AccountUserEmail( String email, String password, User idUser) {
         this.email = email;
         this.password = password;
-        this.user = user;
+        this.idUser = idUser;
+    }
+
+    public AccountUserEmail() {
     }
 
     public int getIdAccountUserEmail() {
@@ -57,12 +59,14 @@ public class AccountUserEmail {
         this.password = password;
     }
 
-    public User getUser() {
-        return user;
+    public User getIdUser() {
+        return idUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setIdUser(User idUser) {
+        this.idUser = idUser;
     }
+
+    
 
 }

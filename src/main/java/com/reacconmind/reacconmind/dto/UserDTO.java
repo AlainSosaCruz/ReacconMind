@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.reacconmind.reacconmind.model.AccountUserEmail;
+import com.reacconmind.reacconmind.model.GoogleAuth;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
     private int idUser;
@@ -18,6 +21,24 @@ public class UserDTO {
     private ProfileColorDTO profileColor;
     private List<ThemePreferenceDTO> themePreferences = new ArrayList<>();
     private Date dateCreationProfile;
+   // private AccountUserEmail accountUserEmail;
+    private GoogleAuth accountUserGoogle;
+
+  /*   public AccountUserEmail getAccountUserEmail() {
+        return accountUserEmail;
+    }
+
+    public void setAccountUserEmail(AccountUserEmail accountUserEmail) {
+        this.accountUserEmail = accountUserEmail;
+    } */
+
+    public GoogleAuth getAccountUserGoogle() {
+        return accountUserGoogle;
+    }
+
+    public void setAccountUserGoogle(GoogleAuth accountUserGoogle) {
+        this.accountUserGoogle = accountUserGoogle;
+    }
 
     public String getName() {
         return name;
