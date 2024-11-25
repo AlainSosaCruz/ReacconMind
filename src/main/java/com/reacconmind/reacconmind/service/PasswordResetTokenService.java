@@ -42,7 +42,7 @@ public class PasswordResetTokenService {
     }
 
     public String createPasswordResetToken(String email) {
-        AccountUserEmail user = accountUserEmailRepository.findByEmail(email);
+        AccountUserEmail user = accountUserEmailRepository.findByEmails(email);
 
         if (user == null) {
             return "User not found for email";

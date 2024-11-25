@@ -39,7 +39,13 @@ public class AccountUserEmailService {
     }
 
     public AccountUserEmail findByEmail(String email) {
-        return accountUserEmailRepository.findByEmail(email);
+        Optional<AccountUserEmail> optionalAccount = accountUserEmailRepository.findByEmail(email);
+
+        if (optionalAccount.isPresent()) {
+            return optionalAccount.get();
+        } else {
+            throw new RuntimeException("User not found with email: " + email);
+        }
     }
 
     private AccountUserEmail convertFromDTO(AccountUserEmailAddDTO account) {

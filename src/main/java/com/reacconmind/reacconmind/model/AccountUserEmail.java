@@ -1,5 +1,11 @@
 package com.reacconmind.reacconmind.model;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
@@ -11,8 +17,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table (name="AccountUserEmail")
-public class AccountUserEmail {
+@Table(name = "AccountUserEmail")
+public class AccountUserEmail implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +32,7 @@ public class AccountUserEmail {
     @JsonBackReference
     private User idUser;
 
-    public AccountUserEmail( String email, String password, User idUser) {
+    public AccountUserEmail(String email, String password, User idUser) {
         this.email = email;
         this.password = password;
         this.idUser = idUser;
@@ -67,6 +73,14 @@ public class AccountUserEmail {
         this.idUser = idUser;
     }
 
-    
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 
 }

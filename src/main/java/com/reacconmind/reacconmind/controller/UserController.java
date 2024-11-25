@@ -42,7 +42,7 @@ import jakarta.validation.Valid;
 @RestController
 @PreAuthorize("hasRole('USER')")
 @RequestMapping("/users")
-@CrossOrigin(origins = "*", methods = {
+@CrossOrigin(origins = "http://localhost:4200", methods = {
                 RequestMethod.GET,
                 RequestMethod.POST,
                 RequestMethod.DELETE,
@@ -184,6 +184,11 @@ public class UserController {
                 } else {
                         return ResponseEntity.ok(responseMessage);
                 }
+        }
+
+        @GetMapping("/user/email/{email}")
+        public User getUserByEmail(@PathVariable String email) {
+                return userService.findUserByEmail(email);
         }
 
         private UserDTO convertUserToDto(User user) {

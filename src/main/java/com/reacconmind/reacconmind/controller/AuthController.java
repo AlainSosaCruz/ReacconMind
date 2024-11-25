@@ -1,51 +1,60 @@
 package com.reacconmind.reacconmind.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.reacconmind.reacconmind.dto.AuthResponse;
 import com.reacconmind.reacconmind.dto.Login;
+import com.reacconmind.reacconmind.dto.LogoutResponse;
+import com.reacconmind.reacconmind.dto.UserAddDTO;
+import com.reacconmind.reacconmind.model.AccountUserEmail;
+import com.reacconmind.reacconmind.model.User;
+import com.reacconmind.reacconmind.response.LoginResponse;
 import com.reacconmind.reacconmind.service.AuthService;
+import com.reacconmind.reacconmind.util.JwtService;
 
-import jakarta.servlet.http.HttpSession;
-
+@RequestMapping("/auth")
 @RestController
-@RequestMapping("/auth") // Ruta base para el controlador
-
+@CrossOrigin(origins = "http://localhost:4200")
 public class AuthController {
 
-    private final AuthService authService;
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
-    public AuthController(AuthService authService) {
-        this.authService = authService;
+    private AuthService authenticationService;
+
+    @PostMapping("/signup")
+    public ResponseEntity<User> register(@RequestBody UserAddDTO userDto) {
+        User registeredUser = authenticationService.signup(userDto);
+
+        return ResponseEntity.ok(registeredUser);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody Login loginRequest) {
-        // Llamar al servicio de autenticación
-        String response = authService.authenticateUser(loginRequest);
-
-        if (response.startsWith("Login exitoso")) {
-            // Devolver respuesta exitosa con mensaje y estado
-            AuthResponse authResponse = new AuthResponse(response, true);
-            return ResponseEntity.ok(authResponse); // Login exitoso
-        } else {
-            // Devolver error con mensaje y estado
-            AuthResponse authResponse = new AuthResponse(response, false);
-            return ResponseEntity.status(401).body(authResponse); // Login fallido
-        }
+    public ResponseEntity<LoginResponse> authenticate(@RequestBody Login userLoginDto) {
+        AccountUserEmail authenticatedUser = authenticationService.authenticate(userLoginDto);
+        String jwtToken = jwtService.generateToken(authenticatedUser);
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setToken(jwtToken);
+        // loginResponse.setExpiresIn(jwtService.getExpirationTime());
+        return ResponseEntity.ok(loginResponse);
     }
 
-    @GetMapping("/logout")
-    public ResponseEntity<String> logout(HttpSession session) {
-        // Invalidar la sesión
-        session.invalidate();
-        return ResponseEntity.ok("Sesión cerrada exitosamente");
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.substring(7); // Elimina el prefijo "Bearer "
+
+        // Invalidar el token
+        jwtService.invalidateToken(jwtToken);
+
+        // Responder con un objeto JSON
+        return ResponseEntity.status(HttpStatus.OK).body(new LogoutResponse("Sesión cerrada exitosamente"));
     }
 }

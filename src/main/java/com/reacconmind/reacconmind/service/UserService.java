@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.reacconmind.reacconmind.dto.UserAddDTO;
+import com.reacconmind.reacconmind.dto.UserDTO;
 import com.reacconmind.reacconmind.model.StatusType;
 import com.reacconmind.reacconmind.model.User;
 import com.reacconmind.reacconmind.repository.UserRepository;
@@ -55,6 +56,20 @@ public class UserService {
 
     }
 
+    public User saveUsser(UserAddDTO userDTO) {
+        User user = convertFromDTO(userDTO);
+
+        return userRepository.save(user);
+
+    }
+
+    public UserAddDTO saveUsers(UserAddDTO userDTO) {
+        User user = convertFromDTO(userDTO);
+        userRepository.save(user);
+        return userDTO;
+
+    }
+
     public User getByIdUser(Integer idUser) {
         return userRepository.findById(idUser).get();
     }
@@ -90,6 +105,10 @@ public class UserService {
         save(user);
 
         return "Image updated successfully.";
+    }
+
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     private UserAddDTO convertToDTO(User user) {

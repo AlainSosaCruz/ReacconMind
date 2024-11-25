@@ -1,5 +1,7 @@
 package com.reacconmind.reacconmind.controller;
 
+import java.util.Optional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.reacconmind.reacconmind.dto.AccountUserEmailAddDTO;
 import com.reacconmind.reacconmind.dto.AccountUserEmailDTO;
+import com.reacconmind.reacconmind.model.AccountUserEmail;
 import com.reacconmind.reacconmind.service.AccountUserEmailService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,10 +34,16 @@ public class AccountUserEmailController {
     }
 
     @GetMapping("/getByEmail/{email}")
-    public ResponseEntity<AccountUserEmailDTO> getByEmail(@PathVariable String email) {
-        AccountUserEmailDTO accountUserEmail = modelMapper.map(accountUserEmailService.findByEmail(email),
-                AccountUserEmailDTO.class);
+    public ResponseEntity<AccountUserEmail> getByEmail(@PathVariable String email) {
+        Optional<AccountUserEmail> accountUserEmail = accountUserEmailService.findUserByEmail(email);
 
-        return ResponseEntity.ok(accountUserEmail);
+        if (accountUserEmail.isPresent()) {
+            // Si el usuario se encuentra, devolver el objeto AccountUserEmail
+            return ResponseEntity.ok(accountUserEmail.get());
+        } else {
+            // Si no se encuentra, devolver un 404 Not Found
+            return ResponseEntity.notFound().build();
+        }
     }
+
 }

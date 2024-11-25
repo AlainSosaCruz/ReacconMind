@@ -10,9 +10,10 @@ import com.reacconmind.reacconmind.model.AccountUserEmail;
 
 public interface AccountUserEmailRepository extends JpaRepository<AccountUserEmail, Integer> {
     @Query("SELECT u FROM AccountUserEmail u WHERE u.email = :email")
-    AccountUserEmail findByEmail(@Param("email") String email);
+    AccountUserEmail findByEmails(@Param("email") String email);
 
     @Query("SELECT u FROM AccountUserEmail u WHERE u.email = :email")
     Optional<AccountUserEmail> findUserByEmail(@Param("email") String email);
 
+    public Optional<AccountUserEmail> findByEmail(String email);
 }
