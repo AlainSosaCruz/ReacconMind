@@ -9,8 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.reacconmind.reacconmind.dto.AccountUserEmailAddDTO;
 import com.reacconmind.reacconmind.dto.UserAddDTO;
-import com.reacconmind.reacconmind.dto.UserDTO;
+import com.reacconmind.reacconmind.model.AccountUserEmail;
 import com.reacconmind.reacconmind.model.StatusType;
 import com.reacconmind.reacconmind.model.User;
 import com.reacconmind.reacconmind.repository.UserRepository;
@@ -26,6 +27,9 @@ public class UserService {
 
     @Autowired
     FirebaseUser firebaseUser;
+
+    @Autowired
+    private AccountUserEmailService accountUserEmailService;
 
     public List<User> getAll() {
         return userRepository.findAll();
@@ -51,9 +55,28 @@ public class UserService {
 
     public void saveUser(UserAddDTO userDTO) {
         User user = convertFromDTO(userDTO);
-
+        AccountUserEmail add = new AccountUserEmail();
+        add.setEmail(userDTO.getEmail());
+        add.setPassword(userDTO.getPassword());
+        add.setIdUser(user);
+        accountUserEmailService.save(add);
         userRepository.save(user);
 
+    }
+
+    public void updateUser(UserAddDTO userDTO, Integer idUser) {
+        // Buscar usuario existente
+        User existingUser = getByIdUser(idUser);
+
+        // Actualizar campos
+        existingUser.setName(userDTO.getName());
+        existingUser.setBiography(userDTO.getBiography());
+        existingUser.setUserName(userDTO.getUserName());
+        existingUser.setImageProfile(userDTO.getImageProfile());
+        existingUser.setImageFacade(userDTO.getImageFacade());
+
+        // Guardar cambios
+        userRepository.save(existingUser);
     }
 
     public User saveUsser(UserAddDTO userDTO) {
@@ -113,6 +136,7 @@ public class UserService {
 
     private UserAddDTO convertToDTO(User user) {
         UserAddDTO userDTO = new UserAddDTO();
+        userDTO.setIdUser(user.getIdUser());
         userDTO.setName(user.getName());
         userDTO.setImageProfile(user.getImageProfile());
         userDTO.setBiography(user.getBiography());

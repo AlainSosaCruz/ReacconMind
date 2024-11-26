@@ -1,6 +1,7 @@
 package com.reacconmind.reacconmind.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class AccountUserEmailService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    @Lazy
     private UserService userService;
 
     public AccountUserEmail save(AccountUserEmail accountUserEmail) {
@@ -57,4 +59,5 @@ public class AccountUserEmailService {
         email.setIdUser(user);
         return email;
     }
+
 }

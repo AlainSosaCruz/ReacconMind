@@ -27,11 +27,11 @@ public class AccountUserEmailController {
     @Autowired
     private ModelMapper modelMapper;
 
-    @PostMapping
+    /* @PostMapping
     public ResponseEntity<AccountUserEmailAddDTO> saveEmail(@RequestBody AccountUserEmailAddDTO accountUserEmail) {
         accountUserEmailService.saveEmail(accountUserEmail);
         return new ResponseEntity<>(accountUserEmail, HttpStatus.CREATED);
-    }
+    } */
 
     @GetMapping("/getByEmail/{email}")
     public ResponseEntity<AccountUserEmail> getByEmail(@PathVariable String email) {

@@ -1,10 +1,13 @@
 package com.reacconmind.reacconmind.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class UserAddDTO {
-
+    @JsonIgnore
+    private int idUser;
     @NotBlank(message = "Name cannot be blank")
     @Size(max = 50, message = "Name must not exceed 50 characters")
     private String name;
@@ -89,6 +92,14 @@ public class UserAddDTO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
     }
 
 }

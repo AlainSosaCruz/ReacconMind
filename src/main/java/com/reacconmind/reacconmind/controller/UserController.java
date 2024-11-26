@@ -1,6 +1,7 @@
 package com.reacconmind.reacconmind.controller;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -125,12 +126,17 @@ public class UserController {
         })
         @PutMapping("/update/{idUser}")
         public ResponseEntity<?> update(
-                        @RequestBody User user,
+                        @RequestBody UserAddDTO user,
                         @PathVariable Integer idUser) {
-                User auxUser = userService.getByIdUser(idUser);
-                user.setIdUser(auxUser.getIdUser());
-                userService.save(user);
-                return new ResponseEntity<String>("Updated record", HttpStatus.OK);
+                try {
+                        userService.updateUser(user, idUser);
+                        return ResponseEntity.ok().build(); // Solo devuelve un código 200 OK sin contenido
+                } catch (NoSuchElementException e) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+                } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .body("Error al actualizar el perfil.");
+                }
         }
 
         @Operation(summary = "Update user status", description = "Update the status of an existing user based on their ID.")
