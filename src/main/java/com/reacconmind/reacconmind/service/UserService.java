@@ -40,7 +40,8 @@ public class UserService {
                 userRepository.findByUserName(userName) != null);
     }
 
-    public List<User> getAllActive() {
+    public List<User> getAllActive(int page, int pageSize) {
+        PageRequest pageRequest= PageRequest.of(page, pageSize);
         return userRepository
                 .findAll()
                 .stream()
@@ -52,8 +53,7 @@ public class UserService {
         userRepository.save(user);
 
     }
-
-    public void saveUser(UserAddDTO userDTO) {
+      public void saveUser(UserAddDTO userDTO) {
         User user = convertFromDTO(userDTO);
         AccountUserEmail add = new AccountUserEmail();
         add.setEmail(userDTO.getEmail());

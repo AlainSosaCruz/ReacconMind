@@ -3,7 +3,7 @@ schema {
   mutation: Mutation
 }
 type Query {
-  getUserPagination: [User]
+  getUserPagination(page: Int, pageSize: Int): [User]
   getById(id: Int): User
 }
 type Mutation {
@@ -14,13 +14,15 @@ type User {
   name: String!
   userName: String!
   biography: String!
-   imageProfile: String  # Cambiado de String! a String
-  imageFacade: String  # Cambiado de String! a String
-  thumbnail: String  # Cambiado de String! a String
-  dateCreationProfile: String  # Cambiado de String! a String
+  imageProfile: String # Cambiado de String! a String
+  imageFacade: String # Cambiado de String! a String
+  thumbnail: String # Cambiado de String! a String
+  dateCreationProfile: String # Cambiado de String! a String
 }
 input UserAddDTO {
   name: String!
   userName: String!
   biography: String!
+  email: String!
+  password: String!
 }

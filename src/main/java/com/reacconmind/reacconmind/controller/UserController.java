@@ -79,7 +79,7 @@ public class UserController {
                                 .collect(Collectors.toList());
         }
 
-        @Operation(summary = "Get all active Users", description = "Retrieve a list of active users.")
+  /*       @Operation(summary = "Get all active Users", description = "Retrieve a list of active users.")
         @ApiResponse(responseCode = "200", description = "Successfully retrieved active users", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserDTO.class)))
         })
@@ -89,7 +89,7 @@ public class UserController {
                 return usersActive.stream()
                                 .map(this::convertUserToDto)
                                 .collect(Collectors.toList());
-        }
+        } */
 
         @Operation(summary = "Get user by ID", description = "Retrieve user details by ID.")
         @ApiResponses(value = {
