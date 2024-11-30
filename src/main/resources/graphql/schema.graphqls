@@ -17,7 +17,6 @@ type User {
   imageProfile: String # Cambiado de String! a String
   imageFacade: String # Cambiado de String! a String
   thumbnail: String # Cambiado de String! a String
-  dateCreationProfile: String # Cambiado de String! a String
 }
 input UserAddDTO {
   name: String!
@@ -26,3 +25,4 @@ input UserAddDTO {
   email: String!
   password: String!
 }
+

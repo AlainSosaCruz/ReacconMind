@@ -50,9 +50,9 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createUserIfNotExists(String name, String imageProfile, String imageFacade,
-            String biography, String userName, String thumbnail, String email, String password) {
+            String biography, String userName, String thumbnail,
+            String email, String password) {
 
-        // Verificar si el usuario ya existe
         if (userService.findByUserName(userName) == null) {
             User user = new User();
             user.setName(name);
@@ -62,21 +62,23 @@ public class DataInitializer implements CommandLineRunner {
             user.setUserName(userName);
             user.setThumbnail(thumbnail);
             user.setStatus(StatusType.Active);
-
             userService.save(user);
 
-            // Verificar si el correo electrónico ya existe
-            if (accountUserEmailService.findByEmail(email) == null) {
-                // Crear y guardar el correo electrónico del usuario
-                accountUserEmailService.save(new AccountUserEmail(email, password, user));
-                profileColorService.save(new ProfileColor(ThemeType.Dark, user));
-                themePreferenceService.save(new ThemePreference(ThemeBotType.Movies, user));
-                themePreferenceService.save(new ThemePreference(ThemeBotType.Music, user));
-            } else {
-                System.out.println("El correo electrónico '" + email + "' ya existe.");
+            try {
+                if (accountUserEmailService.findByEmail(email) == null) {
+                    accountUserEmailService.save(new AccountUserEmail(email, password, user));
+                    profileColorService.save(new ProfileColor(ThemeType.Dark, user));
+                    themePreferenceService.save(new ThemePreference(ThemeBotType.Movies, user));
+                    themePreferenceService.save(new ThemePreference(ThemeBotType.Music, user));
+                } else {
+                    System.out.println("El correo electrónico '" + email + "' ya existe.");
+                }
+            } catch (RuntimeException ex) {
+                System.err.println("Error al verificar o guardar el correo electrónico: " + ex.getMessage());
             }
         } else {
             System.out.println("El usuario con el nombre de usuario '" + userName + "' ya existe.");
         }
     }
+
 }

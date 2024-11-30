@@ -6,12 +6,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+
 import java.sql.Date;
 
 @Entity
 public class PasswordResetToken {
-
-    @Id
+@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idResetToken;
 
@@ -22,10 +24,16 @@ public class PasswordResetToken {
     @ManyToOne
     @JoinColumn(name = "idGoogleAuth", nullable = true)
     private GoogleAuth googleAuth;
+
+    @NotBlank(message = "Token cannot be blank")
     private String token;
+
+    @Future(message = "Expiration date must be in the future")
     private Date expirationDate;
+
     private boolean used;
 
+    // Getters and setters
     public AccountUserEmail getAccountUserEmail() {
         return accountUserEmail;
     }
@@ -73,4 +81,5 @@ public class PasswordResetToken {
     public void setIdResetToken(int idResetToken) {
         this.idResetToken = idResetToken;
     }
+
 }

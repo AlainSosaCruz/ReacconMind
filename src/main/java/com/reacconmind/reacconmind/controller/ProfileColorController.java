@@ -26,6 +26,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+
 @RestController
 @RequestMapping("/profile-colors")
 @Tag(name = "Profile Color", description = "Endpoints for managing user profile colors.")
@@ -44,19 +48,25 @@ public class ProfileColorController {
     })
     @PostMapping
     public ResponseEntity<ProfileColor> createOrUpdateProfileColor(
-            @Parameter(description = "Profile color data to be created") @RequestBody ProfileColorAddDTO profileColorDTO) {
+            @Parameter(description = "Profile color data to be created") @Valid @RequestBody ProfileColorAddDTO profileColorDTO) {
 
-        // Busca el usuario por idUser
+        // Validación de existencia de usuario
         User user = userService.getByIdUser(profileColorDTO.getIdUser());
         if (user == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // o un mensaje que indique que el usuario no fue
-                                                                 // encontrado
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Usuario no encontrado
+        }
+
+        // Validación del tema
+        ThemeType theme;
+        try {
+            theme = ThemeType.valueOf(profileColorDTO.getTheme());
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Tema inválido
         }
 
         // Crea el nuevo ProfileColor
         ProfileColor profileColor = new ProfileColor();
-        profileColor.setTheme(ThemeType.valueOf(profileColorDTO.getTheme())); // Asumiendo que el theme está en el
-                                                                              // formato correcto
+        profileColor.setTheme(theme); 
         profileColor.setUser(user);
 
         profileColorService.save(profileColor);
@@ -70,18 +80,19 @@ public class ProfileColorController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<ProfileColorAddDTO> getProfileColorById(
-            @Parameter(description = "ID of the profile color to retrieve", required = true) @PathVariable Integer id) {
+            @Parameter(description = "ID of the profile color to retrieve", required = true) @PathVariable @NotNull Integer id) {
+
+        // Validación del ID
         ProfileColor profileColor = profileColorService.findById(id);
         if (profileColor == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // ProfileColor no encontrado
         }
 
         // Mapeo de ProfileColor a ProfileColorDTO
         ProfileColorAddDTO profileColorDTO = new ProfileColorAddDTO();
         profileColorDTO.setIdProfileColor(profileColor.getIdProfileColor());
-        profileColorDTO.setIdUser(profileColor.getUser().getIdUser()); // Asumiendo que hay un método getIdUser en User
-        profileColorDTO.setTheme(profileColor.getTheme().name()); // Si ThemeType es un enum, puedes convertirlo a
-                                                                  // String
+        profileColorDTO.setIdUser(profileColor.getUser().getIdUser());
+        profileColorDTO.setTheme(profileColor.getTheme().name());
 
         return new ResponseEntity<>(profileColorDTO, HttpStatus.OK);
     }
@@ -94,15 +105,25 @@ public class ProfileColorController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<ProfileColorAddDTO> updateProfileColor(
-            @PathVariable Integer id,
-            @RequestBody ProfileColorAddDTO profileColorDTO) {
+            @PathVariable @NotNull Integer id,
+            @RequestBody @Valid ProfileColorAddDTO profileColorDTO) {
+        
+        // Validación de existencia del ProfileColor
         ProfileColor existingProfileColor = profileColorService.findById(id);
         if (existingProfileColor == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        // Actualiza los campos necesarios
-        existingProfileColor.setTheme(ThemeType.valueOf(profileColorDTO.getTheme()));
+        // Validación del tema
+        ThemeType theme;
+        try {
+            theme = ThemeType.valueOf(profileColorDTO.getTheme());
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Tema inválido
+        }
+
+        // Actualización de campos
+        existingProfileColor.setTheme(theme);
 
         profileColorService.save(existingProfileColor);
 
@@ -114,5 +135,4 @@ public class ProfileColorController {
 
         return new ResponseEntity<>(updatedProfileColorDTO, HttpStatus.OK);
     }
-
 }

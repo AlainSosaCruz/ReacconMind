@@ -1,7 +1,6 @@
 package com.reacconmind.reacconmind.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -62,5 +61,4 @@ public class ThemePreference {
     public void setUser(User user) {
         this.user = user;
     }
-
 }

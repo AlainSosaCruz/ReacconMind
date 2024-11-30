@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
@@ -14,7 +15,6 @@ import com.reacconmind.reacconmind.dto.ThemePreferenceAddDTO;
 import com.reacconmind.reacconmind.service.ThemePreferenceService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -28,18 +28,21 @@ public class ThemePreferenceController {
 
     @Operation(summary = "Get theme preferences by user ID")
     @ApiResponse(responseCode = "200", description = "Theme preferences found for user")
+    @ApiResponse(responseCode = "404", description = "No theme preferences found for the user")
     @GetMapping("/user/{idUser}")
-    public List<ThemePreferenceAddDTO> getThemePreferencesByUserId(@PathVariable int idUser) {
-        return themePreferenceService.getPreferencesByUserId(idUser);
+    public ResponseEntity<List<ThemePreferenceAddDTO>> getThemePreferencesByUserId(@PathVariable int idUser) {
+        List<ThemePreferenceAddDTO> preferences = themePreferenceService.getPreferencesByUserId(idUser);
+        if (preferences == null || preferences.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(preferences, HttpStatus.OK);
     }
 
     @Operation(summary = "Create a new theme preference")
     @ApiResponse(responseCode = "201", description = "Theme preference created successfully")
     @PostMapping
-    public ResponseEntity<ThemePreferenceAddDTO> createThemePreference(
-            @RequestBody ThemePreferenceAddDTO themePreferenceDTO) {
+    public ResponseEntity<ThemePreferenceAddDTO> createThemePreference(@RequestBody ThemePreferenceAddDTO themePreferenceDTO) {
         ThemePreferenceAddDTO createdPreference = themePreferenceService.saveThemePreference(themePreferenceDTO);
         return new ResponseEntity<>(createdPreference, HttpStatus.CREATED);
     }
-
 }

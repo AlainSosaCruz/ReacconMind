@@ -12,8 +12,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.reacconmind.reacconmind.dto.AccountUserEmailAddDTO;
 import com.reacconmind.reacconmind.dto.UserAddDTO;
 import com.reacconmind.reacconmind.model.AccountUserEmail;
+import com.reacconmind.reacconmind.model.ProfileColor;
 import com.reacconmind.reacconmind.model.StatusType;
+import com.reacconmind.reacconmind.model.ThemeBotType;
+import com.reacconmind.reacconmind.model.ThemePreference;
 import com.reacconmind.reacconmind.model.User;
+import com.reacconmind.reacconmind.repository.ProfileColorRepository;
+import com.reacconmind.reacconmind.repository.ThemePreferenceRepository;
 import com.reacconmind.reacconmind.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -31,6 +36,12 @@ public class UserService {
     @Autowired
     private AccountUserEmailService accountUserEmailService;
 
+    @Autowired
+    private ThemePreferenceRepository themePreferenceRepository;
+
+    @Autowired
+    private ProfileColorRepository profileColorRepository;
+
     public List<User> getAll() {
         return userRepository.findAll();
     }
@@ -41,7 +52,7 @@ public class UserService {
     }
 
     public List<User> getAllActive(int page, int pageSize) {
-        PageRequest pageRequest= PageRequest.of(page, pageSize);
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
         return userRepository
                 .findAll()
                 .stream()
@@ -53,15 +64,38 @@ public class UserService {
         userRepository.save(user);
 
     }
-      public void saveUser(UserAddDTO userDTO) {
+
+    public User saveUser(UserAddDTO userDTO) {
+        // Convertir el DTO a una entidad User
         User user = convertFromDTO(userDTO);
+
+        // Guardar el usuario primero para asegurarse de que está persistido
+        User savedUser = userRepository.save(user);
+
+        // Crear y guardar el correo asociado al usuario
         AccountUserEmail add = new AccountUserEmail();
         add.setEmail(userDTO.getEmail());
         add.setPassword(userDTO.getPassword());
-        add.setIdUser(user);
+        add.setIdUser(savedUser); // Asegurarse de usar el usuario guardado
         accountUserEmailService.save(add);
-        userRepository.save(user);
 
+        // Crear las preferencias de tema y guardarlas
+        List<ThemeBotType> themeBots = userDTO.getThemePreferences();
+        for (ThemeBotType themeBot : themeBots) {
+            ThemePreference preference = new ThemePreference();
+            preference.setUser(savedUser); // Usar el usuario guardado
+            preference.setThemeBot(themeBot);
+            themePreferenceRepository.save(preference);
+        }
+
+        // Crear y guardar el perfil de color
+        ProfileColor profileColor = new ProfileColor();
+        profileColor.setUser(savedUser); // Usar el usuario guardado
+        profileColor.setTheme(userDTO.getThemeType());
+        profileColorRepository.save(profileColor);
+
+        // Devolver el usuario ya guardado
+        return savedUser;
     }
 
     public void updateUser(UserAddDTO userDTO, Integer idUser) {
@@ -72,8 +106,11 @@ public class UserService {
         existingUser.setName(userDTO.getName());
         existingUser.setBiography(userDTO.getBiography());
         existingUser.setUserName(userDTO.getUserName());
-        existingUser.setImageProfile(userDTO.getImageProfile());
-        existingUser.setImageFacade(userDTO.getImageFacade());
+        AccountUserEmail add = new AccountUserEmail();
+        add.setEmail(userDTO.getEmail());
+        add.setPassword(userDTO.getPassword());
+        add.setIdUser(existingUser);
+        accountUserEmailService.save(add);
 
         // Guardar cambios
         userRepository.save(existingUser);
@@ -138,11 +175,29 @@ public class UserService {
         UserAddDTO userDTO = new UserAddDTO();
         userDTO.setIdUser(user.getIdUser());
         userDTO.setName(user.getName());
-        userDTO.setImageProfile(user.getImageProfile());
-        userDTO.setBiography(user.getBiography());
-        userDTO.setImageFacade(user.getImageFacade());
-        userDTO.setUserName(user.getUserName());
         return userDTO;
+    }
+
+    public String uploadCoverImageAndUpdateUser(MultipartFile multipartFile, Integer userId) {
+        if (multipartFile.isEmpty()) {
+            return "The file is empty.";
+        }
+
+        FirebaseUser.UploadResponse uploadResponse = firebaseUser.upload(multipartFile);
+        if (uploadResponse == null) {
+            return "Error uploading the image.";
+        }
+
+        User user = getByIdUser(userId);
+        if (user == null) {
+            return "User not found.";
+        }
+
+        user.setImageFacade(uploadResponse.getOriginalUrl()); // Actualiza la URL de la foto de portada
+
+        save(user);
+
+        return "Cover image updated successfully.";
     }
 
     private User convertFromDTO(UserAddDTO userDTO) {

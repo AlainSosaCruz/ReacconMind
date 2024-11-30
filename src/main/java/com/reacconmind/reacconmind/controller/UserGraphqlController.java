@@ -26,12 +26,7 @@ public class UserGraphqlController {
 
     @MutationMapping
     public User addUser(@Argument(value = "user") UserAddDTO userDTO) {
-        User user = modelMapper.map(userDTO, User.class);
-        user.setImageFacade("https://firebasestorage.googleapis.com/v0/b/reacconmind-e99ee.appspot.com/o/cd16b824-7188-473b-b991-22d09edb98e0.jpg?alt=media&token=92b3ddb6-a9e9-4f17-b10f-9675c0f72d58");
-        user.setImageProfile("https://firebasestorage.googleapis.com/v0/b/reacconmind-e99ee.appspot.com/o/8936051b-d9c1-42d4-a9f0-f522116700ee.png?alt=media&token=31a4ea56-5d4c-411f-b253-c191464b7a9e");
-        user.setThumbnail("https://firebasestorage.googleapis.com/v0/b/reacconmind-e99ee.appspot.com/o/thumb_8936051b-d9c1-42d4-a9f0-f522116700ee.png?alt=media&token=f19a1d1d-2769-46c8-acd4-66582ddab82e");
-        userService.saveUser(userDTO);
-        return user;
+        return userService.saveUser(userDTO);
     }
 
     @QueryMapping

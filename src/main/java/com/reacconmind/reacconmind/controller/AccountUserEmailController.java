@@ -33,7 +33,7 @@ public class AccountUserEmailController {
         return new ResponseEntity<>(accountUserEmail, HttpStatus.CREATED);
     } */
 
-    @GetMapping("/getByEmail/{email}")
+    /* @GetMapping("/getByEmail/{email}")
     public ResponseEntity<AccountUserEmail> getByEmail(@PathVariable String email) {
         Optional<AccountUserEmail> accountUserEmail = accountUserEmailService.findUserByEmail(email);
 
@@ -44,6 +44,6 @@ public class AccountUserEmailController {
             // Si no se encuentra, devolver un 404 Not Found
             return ResponseEntity.notFound().build();
         }
-    }
+    } */
 
 }

@@ -43,12 +43,6 @@ import jakarta.validation.Valid;
 @RestController
 @PreAuthorize("hasRole('USER')")
 @RequestMapping("/users")
-@CrossOrigin(origins = "http://localhost:4200", methods = {
-                RequestMethod.GET,
-                RequestMethod.POST,
-                RequestMethod.DELETE,
-                RequestMethod.PUT,
-})
 @Configuration
 @Tag(name = "User Management", description = "Manage users in the ReacconMind application, including adding, updating, and retrieving users.")
 @OpenAPIDefinition(info = @Info(title = "ReacconMind API", description = "API for user management in ReacconMind", version = "1.0"))
@@ -79,18 +73,6 @@ public class UserController {
                                 .collect(Collectors.toList());
         }
 
-  /*       @Operation(summary = "Get all active Users", description = "Retrieve a list of active users.")
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved active users", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserDTO.class)))
-        })
-        @GetMapping("/usersActive")
-        public List<UserDTO> getAllUserActive() {
-                List<User> usersActive = userService.getAllActive();
-                return usersActive.stream()
-                                .map(this::convertUserToDto)
-                                .collect(Collectors.toList());
-        } */
-
         @Operation(summary = "Get user by ID", description = "Retrieve user details by ID.")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Successfully retrieved user", content = {
@@ -101,6 +83,12 @@ public class UserController {
         @GetMapping("/{idUser}")
         public ResponseEntity<?> getByIdUser(@PathVariable Integer idUser) {
                 User user = userService.getByIdUser(idUser);
+
+                if (user == null) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body("User not found with id: " + idUser);
+                }
+
                 return ResponseEntity.ok(user);
         }
 
@@ -111,7 +99,7 @@ public class UserController {
         })
         @PreAuthorize("permitAll()")
         @PostMapping
-        public ResponseEntity<String> addUser(@Valid @RequestBody UserAddDTO user) {
+        public ResponseEntity<String> addUser(@Valid @RequestBody UserAddDTO user) { // Add @Valid here
                 userService.saveUser(user);
                 return ResponseEntity.ok("User added successfully");
         }
@@ -162,13 +150,6 @@ public class UserController {
                                 HttpStatus.OK);
         }
 
-        /*
-         * @PostMapping(value = "/upload-image", consumes = { "multipart/form-data" })
-         * public String upload(@RequestParam("multipartFile") MultipartFile
-         * multipartFile) {
-         * return firebaseUser.upload(multipartFile);
-         * }
-         */
         @PutMapping(value = "/upload-image/{idUser}", consumes = { "multipart/form-data" })
         @Operation(summary = "Upload Profile Image", description = "This endpoint allows uploading a profile image for the user specified by ID.")
         @ApiResponses(value = {
@@ -197,16 +178,30 @@ public class UserController {
                 return userService.findUserByEmail(email);
         }
 
-        private UserDTO convertUserToDto(User user) {
-                UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        @PutMapping(value = "/upload-cover-image/{idUser}", consumes = { "multipart/form-data" })
+        @Operation(summary = "Upload Cover Image", description = "This endpoint allows uploading a cover image for the user specified by ID.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Cover image updated successfully."),
+                        @ApiResponse(responseCode = "400", description = "The file is empty or error uploading the image."),
+                        @ApiResponse(responseCode = "404", description = "User not found.")
+        })
+        public ResponseEntity<String> uploadCoverImage(
+                        @Parameter(description = "The image file to upload", required = true) @RequestParam("multipartFile") MultipartFile multipartFile,
+                        @Parameter(description = "The ID of the user whose cover image will be updated", required = true) @PathVariable("idUser") Integer userId) {
 
-                // Asignar el email dependiendo de la autenticación
-                if (user.getAccountUserGoogle() != null) {
-                        userDTO.setEmail(user.getAccountUserGoogle().getEmail());
-                } else if (user.getAccountUserEmail() != null) {
-                        userDTO.setEmail(user.getAccountUserEmail().getEmail());
+                String responseMessage = userService.uploadCoverImageAndUpdateUser(multipartFile, userId);
+
+                if (responseMessage.equals("The file is empty.") ||
+                                responseMessage.equals("Error uploading the image.")) {
+                        return ResponseEntity.badRequest().body(responseMessage);
+                } else if (responseMessage.equals("User not found.")) {
+                        return ResponseEntity.notFound().build();
+                } else {
+                        return ResponseEntity.ok(responseMessage);
                 }
+        }
 
-                return userDTO;
+        private UserDTO convertUserToDto(User user) {
+                return modelMapper.map(user, UserDTO.class);
         }
 }

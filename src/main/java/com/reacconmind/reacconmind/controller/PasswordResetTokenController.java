@@ -15,12 +15,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;  // Importar para validar las entradas
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/passwordResets")
 @Tag(name = "Password Reset", description = "Endpoints for requesting and validating password reset tokens.")
-
 public class PasswordResetTokenController {
 
     @Autowired
@@ -36,15 +38,13 @@ public class PasswordResetTokenController {
     })
     @PostMapping("/reset-request")
     public ResponseEntity<String> resetPassword(
-            @RequestParam @Email String email) {
-        String responseMessage = passwordResetService.createPasswordResetToken(
-                email);
+            @RequestParam @Email(message = "Invalid email format") @NotEmpty(message = "Email cannot be empty") String email) {  // Validación para el correo electrónico
+        String responseMessage = passwordResetService.createPasswordResetToken(email);
 
         if ("Request processed".equals(responseMessage)) {
             return ResponseEntity.ok(responseMessage);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    responseMessage);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseMessage);
         }
     }
 
@@ -56,14 +56,11 @@ public class PasswordResetTokenController {
     })
     @PostMapping("/reset")
     public ResponseEntity<String> resetPassword(
-            @RequestParam String token,
-            @RequestParam String password) {
-        boolean result = passwordResetService.validatePasswordResetToken(
-                token,
-                password);
+            @RequestParam @NotEmpty(message = "Token cannot be empty") String token,  // Validación para el token
+            @RequestParam @NotEmpty(message = "Password cannot be empty") @Size(min = 6, message = "Password must be at least 6 characters") String password) {  // Validación para la contraseña
+        boolean result = passwordResetService.validatePasswordResetToken(token, password);
         return result
                 ? ResponseEntity.ok("The password has been successfully reset")
-                : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                        "Unable to reset the password");
+                : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to reset the password");
     }
 }

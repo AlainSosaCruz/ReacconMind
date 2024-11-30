@@ -38,30 +38,32 @@ public class SpringConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable) // Desactivar CSRF si no es necesario
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/users/**",
-                        "/auth/**")
-                .permitAll() // Rutas públicas
-                .anyRequest().authenticated() // Todas las demás requieren autenticación
-            )
-            .authenticationProvider(authenticationProvider()) // Proveedor de autenticación
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Filtro JWT
-            .oauth2Login(oauth2 -> oauth2
-                .defaultSuccessUrl("http://localhost:8080/api/oauth2/callback/google", true)
-                .failureUrl("/login?error=true")) // Configuración de OAuth2
-            .formLogin(form -> form
-                .defaultSuccessUrl("http://localhost:8080/doc/swagger-ui/index.html", true)
-                .failureUrl("/login?error=true")) // Configuración de login por formulario
-            .requiresChannel(channel -> channel
-                .anyRequest().requiresInsecure()); // Configuración de seguridad del canal
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/auth/**","/users/**").permitAll()
+                        .anyRequest().authenticated() // Todas las demás requieren autenticación
+                )
+                .authenticationProvider(authenticationProvider()) // Proveedor de autenticación
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Filtro JWT
+                .oauth2Login(oauth2 -> oauth2
+                        .defaultSuccessUrl("http://localhost:8080/api/oauth2/callback/google", true)
+                        .failureUrl("/login?error=true")) // Configuración de OAuth2
+                .formLogin(form -> form
+                        .defaultSuccessUrl("http://localhost:8080/doc/swagger-ui/index.html", true)
+                        .failureUrl("/login?error=true")) // Configuración de login por formulario
+                .requiresChannel(channel -> channel
+                        .anyRequest().requiresInsecure()); // Configuración de seguridad del canal
 
         return http.build();
     }
 
+    /*
+     * .requiresChannel(channel -> channel
+     * .anyRequest().requiresSecure());
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -73,9 +75,9 @@ public class SpringConfig {
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http
-            .getSharedObject(AuthenticationManagerBuilder.class);
+                .getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder);
+                .passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
 }

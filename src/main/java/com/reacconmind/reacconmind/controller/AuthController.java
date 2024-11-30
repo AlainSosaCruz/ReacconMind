@@ -19,6 +19,8 @@ import com.reacconmind.reacconmind.response.LoginResponse;
 import com.reacconmind.reacconmind.service.AuthService;
 import com.reacconmind.reacconmind.util.JwtService;
 
+import jakarta.validation.Valid;  // Asegúrate de importar esta clase
+
 @RequestMapping("/auth")
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -30,15 +32,16 @@ public class AuthController {
     @Autowired
     private AuthService authenticationService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<User> register(@RequestBody UserAddDTO userDto) {
+    // Método para el registro de usuario
+/*     @PostMapping("/signup")
+    public ResponseEntity<User> register(@Valid @RequestBody UserAddDTO userDto) {  // Añadido @Valid
         User registeredUser = authenticationService.signup(userDto);
-
         return ResponseEntity.ok(registeredUser);
-    }
+    } */
 
+    // Método para el login de usuario
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody Login userLoginDto) {
+    public ResponseEntity<LoginResponse> authenticate(@Valid @RequestBody Login userLoginDto) {  // Añadido @Valid
         AccountUserEmail authenticatedUser = authenticationService.authenticate(userLoginDto);
         String jwtToken = jwtService.generateToken(authenticatedUser);
         LoginResponse loginResponse = new LoginResponse();
@@ -47,6 +50,7 @@ public class AuthController {
         return ResponseEntity.ok(loginResponse);
     }
 
+    // Método para cerrar sesión
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
         String jwtToken = token.substring(7); // Elimina el prefijo "Bearer "

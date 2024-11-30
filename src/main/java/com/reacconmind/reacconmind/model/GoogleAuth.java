@@ -8,6 +8,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class GoogleAuth {
@@ -20,8 +22,12 @@ public class GoogleAuth {
     @JoinColumn(name = "idUser", referencedColumnName = "idUser")
     @JsonBackReference
     private User user;
+
+    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Invalid email format")
     private String email;
 
+    @NotBlank(message = "Google ID cannot be blank")
     private String googleId;
 
     public int getIdGoogleAuth() {
